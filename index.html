@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morphiq Technologies — Intelligent Digital Solutions</title>
+<style>
+  :root {
+    --clr-bg: #FFFFFF;
+    --clr-bg-alt: #F7F7F7;
+    --clr-text: #1A1A1A;
+    --clr-text-muted: #666666;
+    --clr-accent: #C75B12;
+    --clr-accent-light: #F4E1D4;
+    --clr-footer-bg: #1A1A1A;
+    --clr-border: #E8E8E8;
+    --clr-card-bg: #FFFFFF;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.10);
+    --max-w: 1140px;
+    --nav-h: 68px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font); color: var(--clr-text); background: var(--clr-bg); line-height: 1.65; overflow-x: hidden; }
+  img { display: block; max-width: 100%; }
+  a { text-decoration: none; color: inherit; }
+  ul { list-style: none; }
+  .container { width: 100%; max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+
+  /* Reveal */
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .65s cubic-bezier(.25,.8,.25,1), transform .65s cubic-bezier(.25,.8,.25,1); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: .1s; }
+  .reveal-delay-2 { transition-delay: .2s; }
+  .reveal-delay-3 { transition-delay: .3s; }
+  .reveal-delay-4 { transition-delay: .4s; }
+
+  /* ── NAV ── */
+  nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: rgba(255,255,255,0.93); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid transparent; z-index: 1000; transition: border-color .3s, box-shadow .3s; }
+  nav.scrolled { border-color: var(--clr-border); box-shadow: var(--shadow-sm); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 100%; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; letter-spacing: -.3px; color: var(--clr-text); }
+  .logo img { height: 32px; width: auto; display: block; }
+  .nav-links { display: flex; align-items: center; gap: 2px; }
+  .nav-links a { font-size: 14px; font-weight: 500; color: var(--clr-text-muted); padding: 6px 13px; border-radius: var(--radius-sm); transition: color .2s, background .2s; }
+  .nav-links a:hover { color: var(--clr-text); background: var(--clr-bg-alt); }
+  .nav-links a.active { color: var(--clr-text); font-weight: 600; }
+  .nav-cta { background: var(--clr-text) !important; color: #fff !important; padding: 7px 18px !important; border-radius: var(--radius-md) !important; transition: background .2s, transform .15s !important; }
+  .nav-cta:hover { background: var(--clr-accent) !important; transform: translateY(-1px); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; z-index: 1001; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: var(--clr-text); border-radius: 2px; transition: transform .3s, opacity .3s; }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .mobile-nav { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.98); backdrop-filter: blur(12px); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 8px; opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .mobile-nav.open { opacity: 1; pointer-events: all; }
+  .mobile-nav a { font-size: 22px; font-weight: 500; color: var(--clr-text-muted); padding: 10px 30px; border-radius: var(--radius-md); transition: color .2s, background .2s; width: 220px; text-align: center; }
+  .mobile-nav a:hover, .mobile-nav a.active { color: var(--clr-accent); background: var(--clr-accent-light); }
+  .mobile-nav .m-cta { margin-top: 10px; background: var(--clr-text); color: #fff !important; font-size: 16px; }
+  .mobile-nav .m-cta:hover { background: var(--clr-accent); }
+
+  /* ── SHARED ── */
+  .section-label { display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--clr-accent); background: var(--clr-accent-light); padding: 5px 12px; border-radius: 100px; margin-bottom: 18px; }
+  section { padding: 96px 0; }
+  .section-alt { background: var(--clr-bg-alt); }
+  .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--clr-text); color: #fff; font-family: var(--font); font-size: 15px; font-weight: 500; padding: 13px 26px; border-radius: var(--radius-md); border: none; cursor: pointer; transition: background .2s, transform .15s; text-decoration: none; }
+  .btn-primary:hover { background: var(--clr-accent); transform: translateY(-2px); }
+  .btn-secondary { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: var(--clr-text); font-family: var(--font); font-size: 15px; font-weight: 500; padding: 12px 26px; border-radius: var(--radius-md); border: 1px solid var(--clr-border); cursor: pointer; transition: border-color .2s, background .2s, transform .15s; text-decoration: none; }
+  .btn-secondary:hover { border-color: var(--clr-text); background: var(--clr-bg-alt); transform: translateY(-2px); }
+  .btn-group { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* ── HERO ── */
+  .hero { padding: calc(var(--nav-h) + 72px) 0 80px; position: relative; overflow: hidden; }
+  .blob1 { position: absolute; top: -140px; right: -100px; width: 560px; height: 560px; background: radial-gradient(circle at 55% 45%, rgba(199,91,18,0.07) 0%, transparent 68%); border-radius: 50%; pointer-events: none; }
+  .blob2 { position: absolute; bottom: -100px; left: -80px; width: 360px; height: 360px; background: radial-gradient(circle, rgba(199,91,18,0.04) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
+  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; position: relative; z-index: 1; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: var(--clr-text-muted); border: 1px solid var(--clr-border); padding: 5px 14px; border-radius: 100px; margin-bottom: 26px; background: var(--clr-bg-alt); }
+  .eyebrow-dot { width: 6px; height: 6px; background: var(--clr-accent); border-radius: 50%; animation: pulse-dot 2s ease-in-out infinite; }
+  @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+  .hero h1 { font-size: clamp(34px, 4.2vw, 56px); line-height: 1.1; letter-spacing: -.03em; margin-bottom: 22px; font-weight: 700; }
+  .hero h1 em { font-style: normal; color: var(--clr-accent); }
+  .hero-sub { font-size: 17px; color: var(--clr-text-muted); line-height: 1.72; max-width: 460px; margin-bottom: 36px; }
+
+  /* ── ORBIT VISUAL ── */
+  .hero-visual { position: relative; height: 460px; display: flex; align-items: center; justify-content: center; user-select: none; }
+
+  /* Static dashed ring — purely decorative */
+  .orbit-ring {
+    position: absolute;
+    width: 340px; height: 340px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(26,26,26,0.10);
+  }
+  /* Outer subtle ring */
+  .orbit-ring-outer {
+    position: absolute;
+    width: 440px; height: 440px;
+    border-radius: 50%;
+    border: 1px dashed rgba(199,91,18,0.08);
+  }
+
+  /* Central logo orb */
+  .orb {
+    position: absolute;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1.5px solid var(--clr-border);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 12px rgba(26,26,26,0.04), 0 0 0 24px rgba(26,26,26,0.018), var(--shadow-lg);
+    z-index: 10;
+    overflow: hidden;
+  }
+  .orb img { width: 80px; height: auto; object-fit: contain; }
+  .orb-fallback { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; }
+
+  /* Nodes are positioned by JS — no CSS rotation needed */
+  .node {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    will-change: transform;
+  }
+
+  .node-pill {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid var(--clr-border);
+    box-shadow: var(--shadow-md);
+    display: flex; align-items: center; justify-content: center;
+    transition: box-shadow .25s, transform .25s;
+  }
+  .node-pill svg { width: 24px; height: 24px; }
+  .node-label {
+    margin-top: 7px;
+    font-size: 10.5px; font-weight: 600;
+    color: var(--clr-text-muted);
+    letter-spacing: .04em;
+    white-space: nowrap;
+    background: #fff;
+    padding: 2px 8px;
+    border-radius: 5px;
+    border: 1px solid var(--clr-border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ── WHY GRID — 4 then 2 centered ── */
+  .why-header { text-align: center; margin-bottom: 52px; }
+  .why-header h2 { font-size: clamp(26px, 3vw, 40px); font-weight: 700; letter-spacing: -.02em; margin-bottom: 14px; }
+  .why-header p { font-size: 16px; color: var(--clr-text-muted); max-width: 520px; margin: 0 auto; }
+  /* Row 1: always 4 columns */
+  .why-row1 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+  /* Row 2: 2 cards centered */
+  .why-row2 { display: flex; justify-content: center; gap: 16px; }
+  .why-row2 .why-card { width: calc(25% - 6px); min-width: 180px; max-width: 280px; }
+
+  .why-card { background: var(--clr-card-bg); border: 1px solid var(--clr-border); border-radius: var(--radius-lg); padding: 28px 22px; text-align: center; transition: border-color .2s, box-shadow .2s, transform .2s; }
+  .why-card:hover { border-color: var(--clr-accent); box-shadow: var(--shadow-md); transform: translateY(-3px); }
+  .why-icon { width: 50px; height: 50px; background: var(--clr-text); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+  .why-icon svg { width: 24px; height: 24px; }
+  .why-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .why-card p { font-size: 13px; color: var(--clr-text-muted); line-height: 1.55; }
+
+  /* ── FOOTER ── */
+  footer { background: var(--clr-footer-bg); color: #fff; padding: 64px 0 32px; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 52px; }
+  .footer-brand .logo { color: #fff; }
+  .footer-brand .logo img { height: 32px; width: auto; }
+  .footer-brand p { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.7; margin: 16px 0 24px; max-width: 280px; }
+  .social-links { display: flex; gap: 10px; }
+  .social-link { width: 34px; height: 34px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.5); transition: border-color .2s, color .2s, background .2s; }
+  .social-link:hover { border-color: var(--clr-accent); color: var(--clr-accent); background: rgba(199,91,18,0.08); }
+  .social-link svg { width: 15px; height: 15px; }
+  .footer-col h4 { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 18px; }
+  .footer-col ul { display: flex; flex-direction: column; gap: 10px; }
+  .footer-col a { font-size: 14px; color: rgba(255,255,255,0.65); transition: color .2s; }
+  .footer-col a:hover { color: var(--clr-accent); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+  .footer-bottom p { font-size: 13px; color: rgba(255,255,255,0.35); }
+  .footer-accent { color: var(--clr-accent); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .mobile-nav { display: flex; }
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-visual { display: none; }
+    .why-row1 { grid-template-columns: 1fr 1fr; }
+    .why-row2 .why-card { max-width: 320px; width: calc(50% - 8px); }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    section { padding: 64px 0; }
+    .footer-grid { grid-template-columns: 1fr; gap: 36px; }
+    .hero h1 { font-size: 30px; }
+    .btn-group { flex-direction: column; }
+    .footer-bottom { flex-direction: column; text-align: center; }
+    .why-row1 { grid-template-columns: 1fr 1fr; }
+    .why-row2 { flex-direction: column; align-items: center; }
+    .why-row2 .why-card { width: 100%; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav id="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">
+      <img src="logo.png" alt="Morphiq Technologies logo" onerror="this.style.display='none'">
+      Morphiq Technologies
+    </a>
+    <ul class="nav-links" role="navigation" aria-label="Main navigation">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="products.html">Products</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html" class="nav-cta">Contact</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-nav" id="mobileNav" role="dialog" aria-modal="true">
+  <a href="index.html" class="mobile-link class="active"">Home</a>
+  <a href="services.html" class="mobile-link">Services</a>
+  <a href="products.html" class="mobile-link">Products</a>
+  <a href="about.html" class="mobile-link">About</a>
+  <a href="contact.html" class="mobile-link m-cta">Contact</a>
+</div>
+
+<!-- ── HERO ── -->
+<section class="hero" id="home">
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+  <div class="container">
+    <div class="hero-grid">
+
+      <!-- Text -->
+      <div>
+        <div class="eyebrow">
+          <div class="eyebrow-dot"></div>
+          Software · AI · Mobile · Web
+        </div>
+        <h1>Building <em>Intelligent</em><br>Digital Solutions</h1>
+        <p class="hero-sub">We create scalable software platforms, mobile applications, and custom digital systems for businesses and everyday users.</p>
+        <div class="btn-group">
+          <a href="contact.html" class="btn-primary">
+            Start a Project
+            <svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="products.html" class="btn-secondary">Explore Products</a>
+        </div>
+      </div>
+
+      <!-- Orbit visual -->
+      <div class="hero-visual" aria-hidden="true">
+
+        <!-- Decorative static rings -->
+        <div class="orbit-ring"></div>
+        <div class="orbit-ring-outer"></div>
+
+        <!-- Central logo orb — white bg, logo clearly visible -->
+        <div class="orb">
+          <img src="logo.png" onerror="this.style.display='none'; document.getElementById('orbFb').style.display='flex'">
+          <div id="orbFb" class="orb-fallback">
+            <svg viewBox="0 0 40 24" fill="none" width="70">
+              <path d="M20 12 C17 7,13 4,10 4 C5.58 4,2 7.58,2 12 C2 16.42,5.58 20,10 20 C13 20,17 17,20 12 Z" fill="#1A1A1A"/>
+              <path d="M20 12 C23 7,27 4,30 4 C34.42 4,38 7.58,38 12 C38 16.42,34.42 20,30 20 C27 20,23 17,20 12 Z" fill="#C75B12"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 5 orbit nodes — positioned by JS, always upright -->
+          <!-- Node 1: Web -->
+          <div class="node">
+            <div class="node-pill">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="9" stroke="#C75B12" stroke-width="1.6"/>
+                <path d="M12 3s-3 4-3 9 3 9 3 9M12 3s3 4 3 9-3 9-3 9M3 12h18" stroke="#C75B12" stroke-width="1.4"/>
+              </svg>
+            </div>
+            <div class="node-label">Web</div>
+          </div>
+
+          <!-- Node 2: Security -->
+          <div class="node">
+            <div class="node-pill">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 2l8 3.5v5.5c0 5.25-3.5 9.74-8 11-4.5-1.26-8-5.75-8-11V5.5L12 2z" stroke="#C75B12" stroke-width="1.6" stroke-linejoin="round"/>
+                <path d="M9 12l2 2 4-4" stroke="#C75B12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="node-label">Security</div>
+          </div>
+
+          <!-- Node 3: Mobile -->
+          <div class="node">
+            <div class="node-pill">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="7" y="2" width="10" height="20" rx="2" stroke="#C75B12" stroke-width="1.6"/>
+                <circle cx="12" cy="18" r="1" fill="#C75B12"/>
+                <path d="M10 5h4" stroke="#C75B12" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="node-label">Mobile</div>
+          </div>
+
+          <!-- Node 4: Cloud -->
+          <div class="node">
+            <div class="node-pill">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M6.5 19a4.5 4.5 0 01-.4-8.9 6.5 6.5 0 0112.6 1.4A4 4 0 0118 19H6.5z" stroke="#C75B12" stroke-width="1.6" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="node-label">Cloud</div>
+          </div>
+
+          <!-- Node 5: ERP -->
+          <div class="node">
+            <div class="node-pill">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke="#C75B12" stroke-width="1.6"/>
+                <path d="M3 9h18M9 9v12" stroke="#C75B12" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="node-label">ERP</div>
+          </div>
+
+        </div><!-- /hero-visual -->
+
+    </div><!-- /hero-grid -->
+  </div><!-- /container -->
+</section>
+
+<!-- ── WHY CHOOSE US ── -->
+<section class="section-alt">
+  <div class="container">
+    <div class="why-header reveal">
+      <div class="section-label">Why Morphiq Technologies</div>
+      <h2>Built on Principles That Matter</h2>
+      <p>Every system we deliver is crafted around the values that make software genuinely good — not just functional.</p>
+    </div>
+
+    <!-- Row 1: 4 cards -->
+    <div class="why-row1">
+      <div class="why-card reveal reveal-delay-1">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4v5c0 5.25-3.5 9.74-8 11-4.5-1.26-8-5.75-8-11V7l8-4z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Secure Systems</h3>
+        <p>Security-first architecture, encryption, and best practices built in from day one.</p>
+      </div>
+      <div class="why-card reveal reveal-delay-2">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Scalable Architecture</h3>
+        <p>Grow from hundreds to millions of users without expensive rewrites.</p>
+      </div>
+      <div class="why-card reveal reveal-delay-3">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Modern Technologies</h3>
+        <p>Current tools and frameworks for maintainable, future-ready code.</p>
+      </div>
+      <div class="why-card reveal reveal-delay-4">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="14" rx="2" stroke="#fff" stroke-width="1.5"/><path d="M8 21h8M12 17v4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Clean UI/UX</h3>
+        <p>Interfaces your users will love — intuitive, accessible, and visually refined.</p>
+      </div>
+    </div>
+
+    <!-- Row 2: 2 cards centered -->
+    <div class="why-row2">
+      <div class="why-card reveal reveal-delay-1">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="2" width="8" height="14" rx="1.5" stroke="#fff" stroke-width="1.5"/><rect x="11" y="8" width="8" height="14" rx="1.5" stroke="#fff" stroke-width="1.5"/></svg>
+        </div>
+        <h3>Cross-Platform</h3>
+        <p>Web, iOS, Android, and desktop — consistent experience across every device.</p>
+      </div>
+      <div class="why-card reveal reveal-delay-2">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Reliable Support</h3>
+        <p>Ongoing maintenance, dedicated support, and transparent communication throughout.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section>
+  <div class="container" style="text-align:center;">
+    <div class="reveal">
+      <div class="section-label">Ready to Build?</div>
+      <h2 style="font-size:clamp(26px,3vw,40px);letter-spacing:-.02em;font-weight:700;margin-bottom:16px;">Let's Turn Your Vision Into Software</h2>
+      <p style="font-size:16px;color:var(--clr-text-muted);max-width:500px;margin:0 auto 36px;">Whether you need a custom system, a mobile app, or an AI tool — we're here to build it with you.</p>
+      <div class="btn-group" style="justify-content:center;">
+        <a href="contact.html" class="btn-primary">Start a Project <svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="services.html" class="btn-secondary">View Services</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <img src="logo.png" alt="Morphiq Technologies logo" onerror="this.style.display='none'">
+          Morphiq Technologies
+        </a>
+        <p>Building intelligent digital solutions for businesses and everyday users around the world.</p>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="Twitter"><svg viewBox="0 0 15 15" fill="none"><path d="M13.5 1.5l-5 5.5m0 0L2 1.5m6.5 5.5L2 13.5m6.5-6.5l5 6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a>
+          <a href="#" class="social-link" aria-label="LinkedIn"><svg viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 6v5M4 4v.5M7 11V8.5c0-1.5 4-1.5 4 0V11M7 6v5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+          <a href="#" class="social-link" aria-label="GitHub"><svg viewBox="0 0 15 15" fill="none"><path d="M7.5 1C3.91 1 1 3.91 1 7.5c0 2.87 1.86 5.3 4.44 6.16.32.06.44-.14.44-.31v-1.09c-1.8.39-2.18-.87-2.18-.87-.3-.75-.72-.95-.72-.95-.59-.4.04-.39.04-.39.65.04 1 .67 1 .67.58 1 1.52.71 1.89.54.06-.42.23-.71.41-.87-1.44-.16-2.95-.72-2.95-3.2 0-.71.25-1.28.67-1.73-.07-.16-.29-.82.06-1.71 0 0 .55-.18 1.78.67.52-.14 1.07-.21 1.62-.21s1.1.07 1.62.21c1.24-.85 1.78-.67 1.78-.67.35.89.13 1.55.06 1.71.42.45.67 1.02.67 1.73 0 2.49-1.52 3.04-2.96 3.2.23.2.44.59.44 1.19v1.77c0 .17.12.37.44.31C12.14 12.8 14 10.37 14 7.5 14 3.91 11.09 1 7.5 1z" fill="currentColor"/></svg></a>
+          <a href="#" class="social-link" aria-label="Instagram"><svg viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="13" height="13" rx="3" stroke="currentColor" stroke-width="1.2"/><circle cx="7.5" cy="7.5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="4" r=".6" fill="currentColor"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="services.html">Software Development</a></li>
+          <li><a href="services.html">Mobile Apps</a></li>
+          <li><a href="services.html">Web Development</a></li>
+          <li><a href="services.html">AI &amp; Automation</a></li>
+          <li><a href="services.html">UI/UX Design</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Cookie Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 <span class="footer-accent">Morphiq Technologies</span>. All rights reserved.</p>
+      <p>Built with precision. Designed with purpose.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Navbar scroll shadow
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+
+  // Hamburger menu
+  const hamburger = document.getElementById('hamburger');
+  const mobileNav = document.getElementById('mobileNav');
+  hamburger.addEventListener('click', () => {
+    const open = hamburger.classList.toggle('open');
+    mobileNav.classList.toggle('open', open);
+    hamburger.setAttribute('aria-expanded', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    mobileNav.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }));
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── ORBIT ANIMATION ──
+  // Pure translate — nodes never rotate, so icons and labels stay perfectly upright.
+  (function () {
+    const visual   = document.querySelector('.hero-visual');
+    const nodes    = Array.from(visual.querySelectorAll('.node'));
+    const COUNT    = nodes.length;      // 5
+    const RADIUS   = 160;               // px — orbit radius
+    const DURATION = 40000;             // ms for one full revolution
+
+    let startTime = null;
+    let animating = true;
+
+    // Ensure nodes start at top-left so translate is from (0,0)
+    nodes.forEach(n => { n.style.position = 'absolute'; n.style.top = '0'; n.style.left = '0'; });
+
+    // Wait one frame so the browser has laid out the nodes and we can read offsetWidth/Height
+    requestAnimationFrame(() => {
+      // Pre-measure node sizes once — they don't change
+      const sizes = nodes.map(n => ({ w: n.offsetWidth, h: n.offsetHeight }));
+
+      // Pause when scrolled away for performance
+      const heroObs = new IntersectionObserver(entries => {
+        animating = entries[0].isIntersecting;
+        if (animating) requestAnimationFrame(tick);
+      }, { threshold: 0 });
+      heroObs.observe(visual);
+
+      function tick(ts) {
+        if (!animating) return;
+        if (!startTime) startTime = ts;
+
+        const elapsed    = ts - startTime;
+        const orbitAngle = (elapsed / DURATION) * 2 * Math.PI;
+
+        // Centre of the visual container
+        const cx = visual.offsetWidth  / 2;
+        const cy = visual.offsetHeight / 2;
+
+        nodes.forEach((node, i) => {
+          const baseAngle = (i / COUNT) * 2 * Math.PI;
+          const angle     = orbitAngle + baseAngle - Math.PI / 2; // start at 12 o'clock
+
+          // Position on circle
+          const x = cx + RADIUS * Math.cos(angle) - sizes[i].w / 2;
+          const y = cy + RADIUS * Math.sin(angle) - sizes[i].h / 2;
+
+          // Only translate — zero rotation — nodes stay perfectly upright
+          node.style.transform = `translate(${x}px, ${y}px)`;
+        });
+
+        requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
+    });
+  })();
+</script>
+</body>
+</html>

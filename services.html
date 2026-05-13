@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services — Morphiq Technologies</title>
+<style>
+  :root {
+    --clr-bg: #FFFFFF; --clr-bg-alt: #F7F7F7; --clr-text: #1A1A1A; --clr-text-muted: #666666;
+    --clr-accent: #C75B12; --clr-accent-light: #F4E1D4; --clr-footer-bg: #1A1A1A;
+    --clr-border: #E8E8E8; --clr-card-bg: #FFFFFF;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; --font-serif: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06); --shadow-md: 0 4px 16px rgba(0,0,0,0.08); --shadow-lg: 0 12px 40px rgba(0,0,0,0.1);
+    --max-w: 1140px; --nav-h: 68px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font); color: var(--clr-text); background: var(--clr-bg); line-height: 1.65; overflow-x: hidden; }
+  a { text-decoration: none; color: inherit; }
+  ul { list-style: none; }
+  .container { width: 100%; max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s cubic-bezier(.25,.8,.25,1), transform 0.6s cubic-bezier(.25,.8,.25,1); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; } .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; } .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid transparent; z-index: 1000; transition: border-color 0.3s, box-shadow 0.3s; }
+  nav.scrolled { border-color: var(--clr-border); box-shadow: var(--shadow-sm); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 100%; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; letter-spacing: -0.3px; }
+  .logo-icon { width: 48px; height: 29px; flex-shrink: 0; }
+  .nav-links { display: flex; align-items: center; gap: 2px; }
+  .nav-links a { font-size: 14px; font-weight: 500; color: var(--clr-text-muted); padding: 6px 13px; border-radius: var(--radius-sm); transition: color 0.2s, background 0.2s; }
+  .nav-links a:hover { color: var(--clr-text); background: var(--clr-bg-alt); }
+  .nav-links a.active { color: var(--clr-text); font-weight: 600; }
+  .nav-cta { background: var(--clr-text) !important; color: #fff !important; padding: 7px 18px !important; border-radius: var(--radius-md) !important; transition: background 0.2s, transform 0.15s !important; }
+  .nav-cta:hover { background: var(--clr-accent) !important; transform: translateY(-1px); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; z-index: 1001; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: var(--clr-text); border-radius: 2px; transition: transform 0.3s, opacity 0.3s; }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .mobile-nav { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.98); backdrop-filter: blur(12px); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 8px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .mobile-nav.open { opacity: 1; pointer-events: all; }
+  .mobile-nav a { font-size: 22px; font-weight: 500; color: var(--clr-text-muted); padding: 10px 30px; border-radius: var(--radius-md); transition: color 0.2s, background 0.2s; width: 220px; text-align: center; }
+  .mobile-nav a:hover, .mobile-nav a.active { color: var(--clr-accent); background: var(--clr-accent-light); }
+  .mobile-nav .m-cta { margin-top: 10px; background: var(--clr-text); color: #fff !important; font-size: 16px; }
+  .mobile-nav .m-cta:hover { background: var(--clr-accent); }
+
+  /* PAGE HERO */
+  .page-hero { padding: calc(var(--nav-h) + 64px) 0 64px; background: var(--clr-bg); text-align: center; border-bottom: 1px solid var(--clr-border); }
+  .section-label { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--clr-accent); background: var(--clr-accent-light); padding: 5px 12px; border-radius: 100px; margin-bottom: 18px; }
+  .page-hero h1 { font-family: var(--font); font-size: clamp(32px, 4vw, 52px); line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 16px; }
+  .page-hero p { font-size: 17px; color: var(--clr-text-muted); max-width: 540px; margin: 0 auto; font-weight: 300; line-height: 1.7; }
+
+  /* SERVICES */
+  section { padding: 80px 0; }
+  .section-alt { background: var(--clr-bg-alt); }
+  .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .service-card { background: var(--clr-card-bg); border: 1px solid var(--clr-border); border-radius: var(--radius-lg); padding: 32px 28px; transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s; }
+  .service-card:hover { border-color: var(--clr-accent); box-shadow: var(--shadow-md); transform: translateY(-3px); }
+  .service-icon { width: 48px; height: 48px; background: var(--clr-accent-light); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+  .service-icon svg { width: 24px; height: 24px; }
+  .service-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+  .service-card p { font-size: 14px; color: var(--clr-text-muted); line-height: 1.65; font-weight: 300; margin-bottom: 16px; }
+  .service-features { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+  .service-feature { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--clr-text-muted); }
+  .service-feature::before { content: ''; width: 5px; height: 5px; background: var(--clr-accent); border-radius: 50%; flex-shrink: 0; }
+
+  /* PROCESS */
+  .process-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0; }
+  .process-step { padding: 32px 24px; position: relative; }
+  .process-step:not(:last-child)::after { content: ''; position: absolute; top: 44px; right: -1px; width: 2px; height: 24px; background: var(--clr-border); }
+  .process-num { font-family: var(--font); font-size: 36px; color: var(--clr-accent); opacity: 0.3; line-height: 1; margin-bottom: 12px; }
+  .process-step h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+  .process-step p { font-size: 13.5px; color: var(--clr-text-muted); line-height: 1.6; font-weight: 300; }
+
+  /* CTA */
+  .cta-section { background: var(--clr-text); color: #fff; padding: 80px 0; text-align: center; }
+  .cta-section h2 { font-family: var(--font); font-size: clamp(26px, 3vw, 40px); letter-spacing: -0.02em; margin-bottom: 14px; }
+  .cta-section p { font-size: 16px; color: rgba(255,255,255,0.6); max-width: 480px; margin: 0 auto 36px; font-weight: 300; line-height: 1.7; }
+  .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--clr-accent); color: #fff; font-family: var(--font); font-size: 15px; font-weight: 500; padding: 13px 26px; border-radius: var(--radius-md); border: none; cursor: pointer; transition: background 0.2s, transform 0.15s; text-decoration: none; }
+  .btn-primary:hover { background: #a84a0e; transform: translateY(-2px); }
+  .btn-outline { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: #fff; font-family: var(--font); font-size: 15px; font-weight: 500; padding: 12px 26px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.25); cursor: pointer; transition: background 0.2s, transform 0.15s; text-decoration: none; }
+  .btn-outline:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+  .btn-group { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+  /* FOOTER */
+  footer { background: var(--clr-footer-bg); color: #fff; padding: 64px 0 32px; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 52px; }
+  .footer-brand p { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.7; margin: 16px 0 24px; font-weight: 300; max-width: 280px; }
+  .social-links { display: flex; gap: 10px; }
+  .social-link { width: 34px; height: 34px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.5); transition: border-color 0.2s, color 0.2s, background 0.2s; }
+  .social-link:hover { border-color: var(--clr-accent); color: var(--clr-accent); }
+  .social-link svg { width: 15px; height: 15px; }
+  .footer-col h4 { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 18px; }
+  .footer-col ul { display: flex; flex-direction: column; gap: 10px; }
+  .footer-col a { font-size: 14px; color: rgba(255,255,255,0.65); transition: color 0.2s; font-weight: 300; }
+  .footer-col a:hover { color: var(--clr-accent); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+  .footer-bottom p { font-size: 13px; color: rgba(255,255,255,0.35); font-weight: 300; }
+  .footer-accent { color: var(--clr-accent); }
+
+  @media (max-width: 900px) {
+    .nav-links { display: none; } .hamburger { display: flex; } .mobile-nav { display: flex; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .process-step::after { display: none; }
+  }
+  @media (max-width: 600px) {
+    section { padding: 56px 0; } .footer-grid { grid-template-columns: 1fr; gap: 36px; }
+    .footer-bottom { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">
+      <img src="logo.png" alt="Morphiq Technologies logo" style="height:32px;width:auto;display:block;" onerror="this.style.display='none'">
+      Morphiq Technologies
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html" class="active">Services</a></li>
+      <li><a href="products.html">Products</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html" class="nav-cta">Contact</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <a href="index.html" class="mobile-link">Home</a>
+  <a href="services.html" class="mobile-link class="active"">Services</a>
+  <a href="products.html" class="mobile-link">Products</a>
+  <a href="about.html" class="mobile-link">About</a>
+  <a href="contact.html" class="mobile-link m-cta">Contact</a>
+</div>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="section-label">What We Build</div>
+    <h1>End-to-End Digital Services</h1>
+    <p>From concept to deployment — we craft solutions that scale with your ambitions and serve your users beautifully.</p>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+    <div class="services-grid">
+
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-icon"><svg viewBox="0 0 22 22" fill="none"><rect x="2" y="3" width="18" height="13" rx="2" stroke="#C75B12" stroke-width="1.5"/><path d="M7 19h8M11 16v3M6 8l3 3-3 3M12 14h4" stroke="#C75B12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Custom Software Development</h3>
+        <p>Bespoke systems engineered precisely to your workflows, processes, and scale requirements. We design, build, and ship software that solves your specific problem.</p>
+        <div class="service-features">
+          <div class="service-feature">Requirements analysis &amp; architecture design</div>
+          <div class="service-feature">Agile development &amp; sprint delivery</div>
+          <div class="service-feature">Testing, QA &amp; documentation</div>
+          <div class="service-feature">Post-launch support &amp; maintenance</div>
+        </div>
+      </div>
+
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-icon"><svg viewBox="0 0 22 22" fill="none"><rect x="6" y="1" width="10" height="20" rx="2" stroke="#C75B12" stroke-width="1.5"/><circle cx="11" cy="17.5" r="1" fill="#C75B12"/><path d="M9 4h4" stroke="#C75B12" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <h3>Mobile App Development</h3>
+        <p>Native and cross-platform apps for iOS and Android — performant, polished, and user-loved. We build apps people actually enjoy using.</p>
+        <div class="service-features">
+          <div class="service-feature">React Native &amp; Flutter cross-platform</div>
+          <div class="service-feature">Native iOS (Swift) &amp; Android (Kotlin)</div>
+          <div class="service-feature">App Store &amp; Google Play publishing</div>
+          <div class="service-feature">Push notifications &amp; offline support</div>
+        </div>
+      </div>
+
+      <div class="service-card reveal reveal-delay-3">
+        <div class="service-icon"><svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" stroke="#C75B12" stroke-width="1.5"/><path d="M11 2C11 2 8 6 8 11s3 9 3 9M11 2c0 0 3 4 3 9s-3 9-3 9M2 11h18" stroke="#C75B12" stroke-width="1.5"/></svg></div>
+        <h3>Web Development</h3>
+        <p>Fast, accessible, and beautiful web experiences from landing pages to full-scale web applications — built for performance and conversion.</p>
+        <div class="service-features">
+          <div class="service-feature">Responsive design &amp; accessibility</div>
+          <div class="service-feature">SEO optimisation &amp; performance tuning</div>
+          <div class="service-feature">CMS integration &amp; e-commerce</div>
+          <div class="service-feature">Progressive Web App (PWA) support</div>
+        </div>
+      </div>
+
+      <div class="service-card reveal reveal-delay-4">
+        <div class="service-icon"><svg viewBox="0 0 22 22" fill="none"><path d="M3 11l4-4 3 3 4-5 5 6" stroke="#C75B12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17" cy="5" r="2.5" stroke="#C75B12" stroke-width="1.5"/></svg></div>
+        <h3>AI &amp; Automation Solutions</h3>
+        <p>Intelligent pipelines, ML-powered features, and workflow automation that multiply team capacity and eliminate repetitive tasks.</p>
+        <div class="service-features">
+          <div class="service-feature">LLM integration &amp; AI chatbots</div>
+          <div class="service-feature">Workflow &amp; process automation</div>
+          <div class="service-feature">Predictive analytics &amp; ML models</div>
+          <div class="service-feature">Computer vision &amp; NLP systems</div>
+        </div>
+      </div>
+
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-icon"><svg viewBox="0 0 22 22" fill="none"><rect x="2" y="2" width="18" height="18" rx="2" stroke="#C75B12" stroke-width="1.5"/><path d="M2 8h18M8 8v12" stroke="#C75B12" stroke-width="1.5"/></svg></div>
+        <h3>Business Management Systems</h3>
+        <p>ERP, CRM, inventory, HR, and operations platforms tailored to your business model and team size — from startups to enterprise.</p>
+        <div class="service-features">
+          <div class="service-feature">ERP &amp; inventory management</div>
+          <div class="service-feature">CRM &amp; sales pipeline tools</div>
+          <div class="service-feature">HR, payroll &amp; attendance systems</div>
+          <div class="service-feature">Reporting dashboards &amp; analytics</div>
+        </div>
+      </div>
+
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-icon"><svg viewBox="0 0 22 22" fill="none"><ellipse cx="11" cy="8" rx="8" ry="4" stroke="#C75B12" stroke-width="1.5"/><path d="M3 8v6c0 2.21 3.58 4 8 4s8-1.79 8-4V8M3 11c0 2.21 3.58 4 8 4s8-1.79 8-4" stroke="#C75B12" stroke-width="1.5"/></svg></div>
+        <h3>Cloud Platforms</h3>
+        <p>Scalable cloud-native infrastructure, SaaS platforms, and managed deployment pipelines built on AWS, GCP, or Azure.</p>
+        <div class="service-features">
+          <div class="service-feature">Cloud architecture &amp; migration</div>
+          <div class="service-feature">Docker, Kubernetes &amp; CI/CD</div>
+          <div class="service-feature">SaaS platform engineering</div>
+          <div class="service-feature">Monitoring, scaling &amp; cost optimisation</div>
+        </div>
+      </div>
+
+      <div class="service-card reveal reveal-delay-3">
+        <div class="service-icon"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="#C75B12" stroke-width="1.5"/><rect x="12" y="3" width="7" height="7" rx="1.5" stroke="#C75B12" stroke-width="1.5"/><rect x="3" y="12" width="7" height="7" rx="1.5" stroke="#C75B12" stroke-width="1.5"/><path d="M12 15.5h7M15.5 12v7" stroke="#C75B12" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <h3>UI/UX Design</h3>
+        <p>Research-led design systems, prototypes, and interfaces that delight users, reduce churn, and drive retention across all touchpoints.</p>
+        <div class="service-features">
+          <div class="service-feature">User research &amp; journey mapping</div>
+          <div class="service-feature">Wireframing &amp; interactive prototypes</div>
+          <div class="service-feature">Design systems &amp; component libraries</div>
+          <div class="service-feature">Usability testing &amp; iteration</div>
+        </div>
+      </div>
+
+      <div class="service-card reveal reveal-delay-4">
+        <div class="service-icon"><svg viewBox="0 0 22 22" fill="none"><path d="M4 6h14M4 10l5 0M4 14l7 0" stroke="#C75B12" stroke-width="1.5" stroke-linecap="round"/><circle cx="17" cy="15" r="3.5" stroke="#C75B12" stroke-width="1.5"/><path d="M19.5 17.5l2 2" stroke="#C75B12" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <h3>API &amp; Backend Development</h3>
+        <p>Robust RESTful and GraphQL APIs, microservices architectures, and secure backend systems that power your applications reliably.</p>
+        <div class="service-features">
+          <div class="service-feature">REST &amp; GraphQL API design</div>
+          <div class="service-feature">Microservices &amp; serverless architecture</div>
+          <div class="service-feature">Authentication, security &amp; rate limiting</div>
+          <div class="service-feature">Database design &amp; optimisation</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="section-alt">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:48px;" class="reveal">
+      <div class="section-label">How We Work</div>
+      <h2 style="font-family:var(--font);font-size:clamp(26px,3vw,40px);letter-spacing:-0.02em;margin-bottom:12px;">Our Process</h2>
+      <p style="font-size:16px;color:var(--clr-text-muted);max-width:480px;margin:0 auto;font-weight:300;">A clear, collaborative process from first conversation to final delivery.</p>
+    </div>
+    <div class="process-grid">
+      <div class="process-step reveal reveal-delay-1">
+        <div class="process-num">01</div>
+        <h3>Discovery</h3>
+        <p>We start by understanding your goals, users, and constraints through structured discovery sessions.</p>
+      </div>
+      <div class="process-step reveal reveal-delay-2">
+        <div class="process-num">02</div>
+        <h3>Design</h3>
+        <p>We prototype and validate the solution with wireframes and interactive mockups before writing a line of code.</p>
+      </div>
+      <div class="process-step reveal reveal-delay-3">
+        <div class="process-num">03</div>
+        <h3>Build</h3>
+        <p>Agile sprints with weekly updates, code reviews, and continuous integration keep delivery on track.</p>
+      </div>
+      <div class="process-step reveal reveal-delay-4">
+        <div class="process-num">04</div>
+        <h3>Launch</h3>
+        <p>We handle deployment, testing, and go-live — then stay on to support, monitor, and iterate.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-section">
+  <div class="container">
+    <div class="reveal">
+      <h2>Ready to Start Your Project?</h2>
+      <p>Tell us what you need and we'll respond within 24 hours with a tailored proposal.</p>
+      <div class="btn-group">
+        <a href="contact.html" class="btn-primary">Get in Touch <svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="contact.html" class="btn-outline">Get in Touch</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo" style="color:#fff;">
+          <img src="logo.png" alt="Morphiq Technologies logo" style="height:32px;width:auto;display:block;" onerror="this.style.display='none'">
+      Morphiq Technologies
+    </a>
+        <p>Building intelligent digital solutions for businesses and everyday users around the world.</p>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="Twitter"><svg viewBox="0 0 15 15" fill="none"><path d="M13.5 1.5l-5 5.5m0 0L2 1.5m6.5 5.5L2 13.5m6.5-6.5l5 6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a>
+          <a href="#" class="social-link" aria-label="LinkedIn"><svg viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 6v5M4 4v.5M7 11V8.5c0-1.5 4-1.5 4 0V11M7 6v5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+          <a href="#" class="social-link" aria-label="GitHub"><svg viewBox="0 0 15 15" fill="none"><path d="M7.5 1C3.91 1 1 3.91 1 7.5c0 2.87 1.86 5.3 4.44 6.16.32.06.44-.14.44-.31v-1.09c-1.8.39-2.18-.87-2.18-.87-.3-.75-.72-.95-.72-.95-.59-.4.04-.39.04-.39.65.04 1 .67 1 .67.58 1 1.52.71 1.89.54.06-.42.23-.71.41-.87-1.44-.16-2.95-.72-2.95-3.2 0-.71.25-1.28.67-1.73-.07-.16-.29-.82.06-1.71 0 0 .55-.18 1.78.67.52-.14 1.07-.21 1.62-.21s1.1.07 1.62.21c1.24-.85 1.78-.67 1.78-.67.35.89.13 1.55.06 1.71.42.45.67 1.02.67 1.73 0 2.49-1.52 3.04-2.96 3.2.23.2.44.59.44 1.19v1.77c0 .17.12.37.44.31C12.14 12.8 14 10.37 14 7.5 14 3.91 11.09 1 7.5 1z" fill="currentColor"/></svg></a>
+          <a href="#" class="social-link" aria-label="Instagram"><svg viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="13" height="13" rx="3" stroke="currentColor" stroke-width="1.2"/><circle cx="7.5" cy="7.5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="4" r=".6" fill="currentColor"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a href="about.html">About Us</a></li>
+<li><a href="products.html">Products</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+      <div class="footer-col"><h4>Services</h4><ul><li><a href="services.html">Software Development</a></li><li><a href="services.html">Mobile Apps</a></li><li><a href="services.html">Web Development</a></li><li><a href="services.html">AI &amp; Automation</a></li><li><a href="services.html">UI/UX Design</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Cookie Policy</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 <span class="footer-accent">Morphiq Technologies</span>. All rights reserved.</p>
+      <p>Built with precision. Designed with purpose.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 20); }, { passive: true });
+  const hamburger = document.getElementById('hamburger');
+  const mobileNav = document.getElementById('mobileNav');
+  hamburger.addEventListener('click', () => {
+    const open = hamburger.classList.toggle('open');
+    mobileNav.classList.toggle('open', open);
+    hamburger.setAttribute('aria-expanded', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => {
+    hamburger.classList.remove('open'); mobileNav.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false'); document.body.style.overflow = '';
+  }));
+  const observer = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }), { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

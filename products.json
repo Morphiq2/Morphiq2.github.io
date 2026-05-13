@@ -1,0 +1,14 @@
+[
+  {
+    "id": "app-001",
+    "title": "Shopkeeper",
+    "tag": "Tracking",
+    "version": "v1.2.0",
+    "size": "62 MB",
+    "snippet": "Short line shown on the card.",
+    "desc": "Track and manage business growth",
+    "image": "3.png",
+    "icon": "3.png",
+    "apkUrl": "https://drive.google.com/uc?export=download&id=1a7rml03bOGWjY3kAgrIaJSyhJieJ1roC"
+  }
+]

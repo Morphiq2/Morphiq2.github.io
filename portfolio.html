@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio — Morphiq Technologies</title>
+<style>
+  :root{--clr-bg:#FFFFFF;--clr-bg-alt:#F7F7F7;--clr-text:#1A1A1A;--clr-text-muted:#666666;--clr-accent:#C75B12;--clr-accent-light:#F4E1D4;--clr-footer-bg:#1A1A1A;--clr-border:#E8E8E8;--clr-card-bg:#FFFFFF;--font:'DM Sans',sans-serif;--font-serif:'DM Serif Display',serif;--radius-sm:6px;--radius-md:10px;--radius-lg:16px;--shadow-sm:0 1px 3px rgba(0,0,0,0.06);--shadow-md:0 4px 16px rgba(0,0,0,0.08);--shadow-lg:0 12px 40px rgba(0,0,0,0.1);--max-w:1140px;--nav-h:68px;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--font);color:var(--clr-text);background:var(--clr-bg);line-height:1.65;overflow-x:hidden;}
+  a{text-decoration:none;color:inherit;}ul{list-style:none;}
+  .container{width:100%;max-width:var(--max-w);margin:0 auto;padding:0 24px;}
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity 0.6s cubic-bezier(.25,.8,.25,1),transform 0.6s cubic-bezier(.25,.8,.25,1);}
+  .reveal.visible{opacity:1;transform:translateY(0);}
+  .reveal-delay-1{transition-delay:0.1s;}.reveal-delay-2{transition-delay:0.2s;}.reveal-delay-3{transition-delay:0.3s;}.reveal-delay-4{transition-delay:0.4s;}
+
+  nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid transparent;z-index:1000;transition:border-color 0.3s,box-shadow 0.3s;}
+  nav.scrolled{border-color:var(--clr-border);box-shadow:var(--shadow-sm);}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:100%;}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:17px;letter-spacing:-0.3px;}
+  .logo-icon{width:48px;height:29px;flex-shrink:0;}
+  .nav-links{display:flex;align-items:center;gap:2px;}
+  .nav-links a{font-size:14px;font-weight:500;color:var(--clr-text-muted);padding:6px 13px;border-radius:var(--radius-sm);transition:color 0.2s,background 0.2s;}
+  .nav-links a:hover{color:var(--clr-text);background:var(--clr-bg-alt);}
+  .nav-links a.active{color:var(--clr-text);font-weight:600;}
+  .nav-cta{background:var(--clr-text)!important;color:#fff!important;padding:7px 18px!important;border-radius:var(--radius-md)!important;transition:background 0.2s,transform 0.15s!important;}
+  .nav-cta:hover{background:var(--clr-accent)!important;transform:translateY(-1px);}
+  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none;z-index:1001;}
+  .hamburger span{display:block;width:22px;height:2px;background:var(--clr-text);border-radius:2px;transition:transform 0.3s,opacity 0.3s;}
+  .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .hamburger.open span:nth-child(2){opacity:0;}
+  .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  .mobile-nav{display:none;position:fixed;inset:0;background:rgba(255,255,255,0.98);backdrop-filter:blur(12px);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:8px;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+  .mobile-nav.open{opacity:1;pointer-events:all;}
+  .mobile-nav a{font-size:22px;font-weight:500;color:var(--clr-text-muted);padding:10px 30px;border-radius:var(--radius-md);transition:color 0.2s,background 0.2s;width:220px;text-align:center;}
+  .mobile-nav a:hover,.mobile-nav a.active{color:var(--clr-accent);background:var(--clr-accent-light);}
+  .mobile-nav .m-cta{margin-top:10px;background:var(--clr-text);color:#fff!important;font-size:16px;}
+  .mobile-nav .m-cta:hover{background:var(--clr-accent);}
+
+  .section-label{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:var(--clr-accent);background:var(--clr-accent-light);padding:5px 12px;border-radius:100px;margin-bottom:18px;}
+  .page-hero{padding:calc(var(--nav-h) + 64px) 0 64px;text-align:center;border-bottom:1px solid var(--clr-border);}
+  .page-hero h1{font-family:var(--font);font-size:clamp(32px,4vw,52px);line-height:1.15;letter-spacing:-0.02em;margin-bottom:16px;}
+  .page-hero p{font-size:17px;color:var(--clr-text-muted);max-width:540px;margin:0 auto;font-weight:300;line-height:1.7;}
+
+  section{padding:80px 0;}
+  .section-alt{background:var(--clr-bg-alt);}
+
+  /* Filter tabs */
+  .filter-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:48px;justify-content:center;}
+  .filter-tab{font-family:var(--font);font-size:13.5px;font-weight:500;padding:7px 18px;border-radius:100px;border:1px solid var(--clr-border);background:var(--clr-bg);color:var(--clr-text-muted);cursor:pointer;transition:all 0.2s;}
+  .filter-tab:hover,.filter-tab.active{background:var(--clr-text);color:#fff;border-color:var(--clr-text);}
+
+  .portfolio-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;}
+  .portfolio-card{background:var(--clr-card-bg);border:1px solid var(--clr-border);border-radius:var(--radius-lg);overflow:hidden;transition:box-shadow 0.2s,transform 0.2s;}
+  .portfolio-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-5px);}
+  .portfolio-img{height:190px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+  .portfolio-mockup-window{width:78%;background:#fff;border-radius:8px;border:1px solid var(--clr-border);box-shadow:var(--shadow-md);overflow:hidden;z-index:1;}
+  .pf-window-bar{height:24px;background:var(--clr-bg-alt);border-bottom:1px solid var(--clr-border);display:flex;align-items:center;padding:0 10px;gap:5px;}
+  .pf-dot{width:7px;height:7px;border-radius:50%;}
+  .pf-content{padding:12px 10px;}
+  .pf-line{height:6px;background:var(--clr-border);border-radius:3px;margin-bottom:6px;}
+  .pf-line.accent{background:var(--clr-accent);opacity:0.5;}
+  .portfolio-info{padding:22px 26px 26px;}
+  .portfolio-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+  .portfolio-tag{font-size:11px;font-weight:500;color:var(--clr-text-muted);background:var(--clr-bg-alt);border:1px solid var(--clr-border);padding:3px 9px;border-radius:100px;}
+  .portfolio-info h3{font-size:17px;font-weight:600;margin-bottom:8px;}
+  .portfolio-info p{font-size:13.5px;color:var(--clr-text-muted);line-height:1.65;font-weight:300;}
+
+  footer{background:var(--clr-footer-bg);color:#fff;padding:64px 0 32px;}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:52px;}
+  .footer-brand p{font-size:14px;color:rgba(255,255,255,0.5);line-height:1.7;margin:16px 0 24px;font-weight:300;max-width:280px;}
+  .social-links{display:flex;gap:10px;}
+  .social-link{width:34px;height:34px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);transition:border-color 0.2s,color 0.2s;}
+  .social-link:hover{border-color:var(--clr-accent);color:var(--clr-accent);}
+  .social-link svg{width:15px;height:15px;}
+  .footer-col h4{font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:18px;}
+  .footer-col ul{display:flex;flex-direction:column;gap:10px;}
+  .footer-col a{font-size:14px;color:rgba(255,255,255,0.65);transition:color 0.2s;font-weight:300;}
+  .footer-col a:hover{color:var(--clr-accent);}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,0.08);padding-top:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+  .footer-bottom p{font-size:13px;color:rgba(255,255,255,0.35);font-weight:300;}
+  .footer-accent{color:var(--clr-accent);}
+
+  @media(max-width:900px){.nav-links{display:none;}.hamburger{display:flex;}.mobile-nav{display:flex;}.footer-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:600px){section{padding:56px 0;}.footer-grid{grid-template-columns:1fr;gap:36px;}.footer-bottom{flex-direction:column;text-align:center;}}
+</style>
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">
+      <img src="logo.png" alt="Morphiq Technologies logo" style="height:32px;width:auto;display:block;" onerror="this.style.display='none'">
+      Morphiq Technologies
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="products.html">Products</a></li>
+      <li><a href="portfolio.html" class="active">Portfolio</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html" class="nav-cta">Contact</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <a href="index.html" class="mobile-link">Home</a>
+  <a href="services.html" class="mobile-link">Services</a>
+  <a href="products.html" class="mobile-link">Products</a>
+  <a href="portfolio.html" class="mobile-link active">Portfolio</a>
+  <a href="about.html" class="mobile-link">About</a>
+  <a href="contact.html" class="mobile-link m-cta">Contact</a>
+</div>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="section-label">Portfolio</div>
+    <h1>Projects We're Proud Of</h1>
+    <p>A selection of systems, apps, and platforms we've designed and delivered for clients across multiple industries.</p>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+    <div class="filter-tabs" role="tablist" aria-label="Filter projects">
+      <button class="filter-tab active" data-filter="all">All Projects</button>
+      <button class="filter-tab" data-filter="web">Web App</button>
+      <button class="filter-tab" data-filter="mobile">Mobile App</button>
+      <button class="filter-tab" data-filter="ai">AI System</button>
+      <button class="filter-tab" data-filter="ecom">E-Commerce</button>
+      <button class="filter-tab" data-filter="auto">Automation</button>
+    </div>
+
+    <div class="portfolio-grid" id="portfolioGrid">
+
+      <div class="portfolio-card reveal reveal-delay-1" data-category="web">
+        <div class="portfolio-img" style="background:#F0F4FF;">
+          <div class="portfolio-mockup-window">
+            <div class="pf-window-bar"><div class="pf-dot" style="background:#FF5F56;"></div><div class="pf-dot" style="background:#FFBD2E;"></div><div class="pf-dot" style="background:#27C93F;"></div></div>
+            <div class="pf-content"><div class="pf-line accent" style="width:60%;"></div><div class="pf-line" style="width:90%;"></div><div class="pf-line" style="width:75%;"></div><div class="pf-line accent" style="width:45%;"></div><div class="pf-line" style="width:80%;"></div></div>
+          </div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-tags"><span class="portfolio-tag">Web App</span><span class="portfolio-tag">React</span><span class="portfolio-tag">Node.js</span></div>
+          <h3>ZeroGap ERP Portal</h3>
+          <p>A full-stack enterprise resource planning platform for a manufacturing firm — covering procurement, inventory, and reporting across 5 branches.</p>
+        </div>
+      </div>
+
+      <div class="portfolio-card reveal reveal-delay-2" data-category="mobile">
+        <div class="portfolio-img" style="background:#FFF4F0;">
+          <div class="portfolio-mockup-window">
+            <div class="pf-window-bar"><div class="pf-dot" style="background:#FF5F56;"></div><div class="pf-dot" style="background:#FFBD2E;"></div><div class="pf-dot" style="background:#27C93F;"></div></div>
+            <div class="pf-content"><div class="pf-line" style="width:50%;"></div><div class="pf-line accent" style="width:85%;"></div><div class="pf-line" style="width:65%;"></div><div class="pf-line accent" style="width:40%;"></div><div class="pf-line" style="width:70%;"></div></div>
+          </div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-tags"><span class="portfolio-tag">Mobile App</span><span class="portfolio-tag">Flutter</span><span class="portfolio-tag">Firebase</span></div>
+          <h3>Ridewise Logistics App</h3>
+          <p>A logistics and driver management mobile app with live GPS tracking, delivery scheduling, and customer notifications for a transport startup.</p>
+        </div>
+      </div>
+
+      <div class="portfolio-card reveal reveal-delay-3" data-category="ai">
+        <div class="portfolio-img" style="background:#F4FFF8;">
+          <div class="portfolio-mockup-window">
+            <div class="pf-window-bar"><div class="pf-dot" style="background:#FF5F56;"></div><div class="pf-dot" style="background:#FFBD2E;"></div><div class="pf-dot" style="background:#27C93F;"></div></div>
+            <div class="pf-content"><div class="pf-line accent" style="width:70%;"></div><div class="pf-line" style="width:95%;"></div><div class="pf-line" style="width:55%;"></div><div class="pf-line" style="width:80%;"></div><div class="pf-line accent" style="width:35%;"></div></div>
+          </div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-tags"><span class="portfolio-tag">AI System</span><span class="portfolio-tag">Python</span><span class="portfolio-tag">FastAPI</span></div>
+          <h3>MedBot Clinical AI</h3>
+          <p>An AI-assisted triage and appointment booking system for a private clinic network — reducing administrative workload by 70%.</p>
+        </div>
+      </div>
+
+      <div class="portfolio-card reveal reveal-delay-4" data-category="ecom">
+        <div class="portfolio-img" style="background:#FAFAF0;">
+          <div class="portfolio-mockup-window">
+            <div class="pf-window-bar"><div class="pf-dot" style="background:#FF5F56;"></div><div class="pf-dot" style="background:#FFBD2E;"></div><div class="pf-dot" style="background:#27C93F;"></div></div>
+            <div class="pf-content"><div class="pf-line" style="width:75%;"></div><div class="pf-line accent" style="width:55%;"></div><div class="pf-line" style="width:90%;"></div><div class="pf-line accent" style="width:60%;"></div><div class="pf-line" style="width:45%;"></div></div>
+          </div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-tags"><span class="portfolio-tag">E-Commerce</span><span class="portfolio-tag">Next.js</span><span class="portfolio-tag">PostgreSQL</span></div>
+          <h3>Artisanal Market Platform</h3>
+          <p>A multi-vendor e-commerce platform for local artisans — live inventory, integrated payments, and seller analytics dashboards.</p>
+        </div>
+      </div>
+
+      <div class="portfolio-card reveal reveal-delay-1" data-category="auto">
+        <div class="portfolio-img" style="background:#F5F0FF;">
+          <div class="portfolio-mockup-window">
+            <div class="pf-window-bar"><div class="pf-dot" style="background:#FF5F56;"></div><div class="pf-dot" style="background:#FFBD2E;"></div><div class="pf-dot" style="background:#27C93F;"></div></div>
+            <div class="pf-content"><div class="pf-line accent" style="width:80%;"></div><div class="pf-line" style="width:60%;"></div><div class="pf-line accent" style="width:45%;"></div><div class="pf-line" style="width:75%;"></div><div class="pf-line" style="width:50%;"></div></div>
+          </div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-tags"><span class="portfolio-tag">Automation</span><span class="portfolio-tag">n8n</span><span class="portfolio-tag">API</span></div>
+          <h3>SalesSync Automation Hub</h3>
+          <p>A sales automation platform integrating CRM, email, WhatsApp, and reporting — eliminating hours of manual follow-up daily.</p>
+        </div>
+      </div>
+
+      <div class="portfolio-card reveal reveal-delay-2" data-category="web">
+        <div class="portfolio-img" style="background:#F0FAFF;">
+          <div class="portfolio-mockup-window">
+            <div class="pf-window-bar"><div class="pf-dot" style="background:#FF5F56;"></div><div class="pf-dot" style="background:#FFBD2E;"></div><div class="pf-dot" style="background:#27C93F;"></div></div>
+            <div class="pf-content"><div class="pf-line" style="width:85%;"></div><div class="pf-line accent" style="width:65%;"></div><div class="pf-line" style="width:50%;"></div><div class="pf-line accent" style="width:75%;"></div><div class="pf-line" style="width:40%;"></div></div>
+          </div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-tags"><span class="portfolio-tag">EdTech</span><span class="portfolio-tag">Mobile</span><span class="portfolio-tag">Video</span></div>
+          <h3>LearnBridge LMS</h3>
+          <p>A learning management system for educational institutions — live classes, assignments, progress tracking, and certification management.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo" style="color:#fff;">
+          <img src="logo.png" alt="Morphiq Technologies logo" style="height:32px;width:auto;display:block;" onerror="this.style.display='none'">
+      Morphiq Technologies
+    </a>
+        <p>Building intelligent digital solutions for businesses and everyday users around the world.</p>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="Twitter"><svg viewBox="0 0 15 15" fill="none"><path d="M13.5 1.5l-5 5.5m0 0L2 1.5m6.5 5.5L2 13.5m6.5-6.5l5 6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a>
+          <a href="#" class="social-link" aria-label="LinkedIn"><svg viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 6v5M4 4v.5M7 11V8.5c0-1.5 4-1.5 4 0V11M7 6v5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+          <a href="#" class="social-link" aria-label="GitHub"><svg viewBox="0 0 15 15" fill="none"><path d="M7.5 1C3.91 1 1 3.91 1 7.5c0 2.87 1.86 5.3 4.44 6.16.32.06.44-.14.44-.31v-1.09c-1.8.39-2.18-.87-2.18-.87-.3-.75-.72-.95-.72-.95-.59-.4.04-.39.04-.39.65.04 1 .67 1 .67.58 1 1.52.71 1.89.54.06-.42.23-.71.41-.87-1.44-.16-2.95-.72-2.95-3.2 0-.71.25-1.28.67-1.73-.07-.16-.29-.82.06-1.71 0 0 .55-.18 1.78.67.52-.14 1.07-.21 1.62-.21s1.1.07 1.62.21c1.24-.85 1.78-.67 1.78-.67.35.89.13 1.55.06 1.71.42.45.67 1.02.67 1.73 0 2.49-1.52 3.04-2.96 3.2.23.2.44.59.44 1.19v1.77c0 .17.12.37.44.31C12.14 12.8 14 10.37 14 7.5 14 3.91 11.09 1 7.5 1z" fill="currentColor"/></svg></a>
+          <a href="#" class="social-link" aria-label="Instagram"><svg viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="13" height="13" rx="3" stroke="currentColor" stroke-width="1.2"/><circle cx="7.5" cy="7.5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="4" r=".6" fill="currentColor"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a href="about.html">About Us</a></li><li><a href="portfolio.html">Portfolio</a></li><li><a href="products.html">Products</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+      <div class="footer-col"><h4>Services</h4><ul><li><a href="services.html">Software Development</a></li><li><a href="services.html">Mobile Apps</a></li><li><a href="services.html">Web Development</a></li><li><a href="services.html">AI &amp; Automation</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Cookie Policy</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 <span class="footer-accent">Morphiq Technologies</span>. All rights reserved.</p>
+      <p>Built with precision. Designed with purpose.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const navbar=document.getElementById('navbar');
+  window.addEventListener('scroll',()=>{navbar.classList.toggle('scrolled',window.scrollY>20);},{passive:true});
+  const hamburger=document.getElementById('hamburger'),mobileNav=document.getElementById('mobileNav');
+  hamburger.addEventListener('click',()=>{const o=hamburger.classList.toggle('open');mobileNav.classList.toggle('open',o);hamburger.setAttribute('aria-expanded',o);document.body.style.overflow=o?'hidden':'';});
+  document.querySelectorAll('.mobile-link').forEach(l=>l.addEventListener('click',()=>{hamburger.classList.remove('open');mobileNav.classList.remove('open');hamburger.setAttribute('aria-expanded','false');document.body.style.overflow='';}));
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}}),{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+  // Filter tabs
+  document.querySelectorAll('.filter-tab').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      const filter=tab.dataset.filter;
+      document.querySelectorAll('.portfolio-card').forEach(card=>{
+        const match=filter==='all'||card.dataset.category===filter;
+        card.style.display=match?'':'none';
+      });
+    });
+  });
+</script>
+</body>
+</html>
