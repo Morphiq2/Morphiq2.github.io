@@ -120,7 +120,6 @@
   .product-card:hover { border-color: rgba(199,91,18,0.45); box-shadow: var(--shadow-lg); transform: translateY(-5px); }
   .product-card:focus-visible { box-shadow: 0 0 0 3px rgba(199,91,18,0.3), var(--shadow-md); border-color: var(--clr-accent); }
 
-  /* Square image */
   .card-img {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -132,7 +131,6 @@
   .card-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s cubic-bezier(.25,.8,.25,1); }
   .product-card:hover .card-img img { transform: scale(1.06); }
 
-  /* Placeholder icon */
   .card-img-ph {
     width: 100%; height: 100%;
     display: flex; align-items: center; justify-content: center;
@@ -147,7 +145,6 @@
   }
   .ph-icon-wrap svg { width: 34px; height: 34px; }
 
-  /* Hover overlay */
   .card-hover-layer {
     position: absolute; inset: 0;
     background: rgba(26,26,26,0);
@@ -172,7 +169,6 @@
   }
   .product-card:hover .card-view-pill { opacity: 1; transform: translateY(0) scale(1); }
 
-  /* Card body */
   .card-body { padding: 12px 13px 14px; flex: 1; }
   .card-tag { font-size: 9.5px; font-weight: 700; color: var(--clr-accent); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 5px; }
   .card-title { font-size: 13px; font-weight: 700; line-height: 1.3; margin-bottom: 5px; letter-spacing: -.01em; }
@@ -234,7 +230,6 @@
   }
   .overlay.open .modal { transform: translateY(0) scale(1); }
 
-  /* Modal banner image */
   .modal-banner {
     width: 100%;
     aspect-ratio: 16/9;
@@ -253,7 +248,6 @@
   .mph-icon { width: 88px; height: 88px; border-radius: 26px; background: #fff; box-shadow: var(--shadow-lg); display: flex; align-items: center; justify-content: center; }
   .mph-icon svg { width: 50px; height: 50px; }
 
-  /* Close button */
   .modal-close {
     position: absolute; top: 12px; right: 12px;
     width: 32px; height: 32px;
@@ -269,7 +263,6 @@
   .modal-close:hover { background: #fff; transform: scale(1.1); }
   .modal-close svg { width: 13px; height: 13px; }
 
-  /* Modal body */
   .modal-body { padding: 26px 30px 32px; }
 
   .modal-header-row {
@@ -297,7 +290,6 @@
 
   .modal-desc { font-size: 14px; color: var(--clr-text-muted); line-height: 1.78; margin-bottom: 22px; }
 
-  /* Chips */
   .modal-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
   .chip {
     display: inline-flex; align-items: center; gap: 5px;
@@ -307,7 +299,9 @@
   }
   .chip svg { width: 11px; height: 11px; flex-shrink: 0; }
 
-  /* Download button */
+  /* ── MODAL BUTTONS ── */
+  .modal-actions { display: flex; flex-direction: column; gap: 10px; }
+
   .modal-dl-btn {
     display: flex;
     align-items: center;
@@ -329,6 +323,37 @@
   }
   .modal-dl-btn:hover { background: var(--clr-accent); transform: translateY(-1px); }
   .modal-dl-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+  /* Web app button — outlined style */
+  .modal-web-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    background: transparent;
+    color: var(--clr-text);
+    font-family: var(--font);
+    font-size: 14.5px;
+    font-weight: 700;
+    padding: 13px 22px;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    letter-spacing: .01em;
+    border: 1.5px solid var(--clr-border);
+    transition: border-color .2s, color .2s, background .2s, transform .15s;
+    cursor: pointer;
+  }
+  .modal-web-btn:hover {
+    border-color: var(--clr-accent);
+    color: var(--clr-accent);
+    background: var(--clr-accent-light);
+    transform: translateY(-1px);
+  }
+  .modal-web-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+  /* Hide web button when no webUrl */
+  .modal-web-btn[hidden] { display: none; }
+
   .modal-dl-note { text-align: center; font-size: 11.5px; color: var(--clr-text-muted); margin-top: 9px; }
 
   /* ── FOOTER ── */
@@ -413,7 +438,6 @@
 <!-- ── PRODUCTS SECTION ── -->
 <section class="products-section">
   <div class="container">
-    <!-- Loading skeleton -->
     <div class="skeleton-grid" id="skeletonGrid">
       <div class="skeleton-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line short"></div><div class="sk-line medium"></div><div class="sk-line short"></div></div></div>
       <div class="skeleton-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line short"></div><div class="sk-line medium"></div><div class="sk-line short"></div></div></div>
@@ -421,7 +445,6 @@
       <div class="skeleton-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line short"></div><div class="sk-line medium"></div><div class="sk-line short"></div></div></div>
       <div class="skeleton-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line short"></div><div class="sk-line medium"></div><div class="sk-line short"></div></div></div>
     </div>
-    <!-- Products grid (populated by JS) -->
     <div class="products-grid" id="productsGrid" style="display:none;"></div>
   </div>
 </section>
@@ -444,14 +467,25 @@
       <div class="modal-hr"></div>
       <div class="modal-desc" id="modalDesc"></div>
       <div class="modal-chips" id="modalChips"></div>
-      <a class="modal-dl-btn" id="modalDlBtn" href="#" download target="_blank" rel="noopener">
-        <svg viewBox="0 0 18 18" fill="none">
-          <path d="M9 2v10M5 8l4 4 4-4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M2 16h14" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-        Download App
-      </a>
-      <div class="modal-dl-note">Available for Android · Free to install</div>
+
+      <!-- ── ACTION BUTTONS ── -->
+      <div class="modal-actions">
+        <a class="modal-dl-btn" id="modalDlBtn" href="#" download target="_blank" rel="noopener">
+          <svg viewBox="0 0 18 18" fill="none">
+            <path d="M9 2v10M5 8l4 4 4-4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 16h14" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          Download App
+        </a>
+        <a class="modal-web-btn" id="modalWebBtn" href="#" target="_blank" rel="noopener" hidden>
+          <svg viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M9 1.5C9 1.5 6 5 6 9s3 7.5 3 7.5M9 1.5C9 1.5 12 5 12 9s-3 7.5-3 7.5M1.5 9h15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          Open Web App
+        </a>
+      </div>
+      <div class="modal-dl-note">Android APK · Free to install</div>
     </div>
   </div>
 </div>
@@ -507,9 +541,6 @@
 </footer>
 
 <script>
-/* ─────────────────────────────────────────────────────────────
-   PLACEHOLDER ICON (used when no image / icon is set)
-───────────────────────────────────────────────────────────── */
   const PLACEHOLDER_SVG = `<svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="9" y="7" width="26" height="30" rx="3.5" stroke="#C75B12" stroke-width="1.8"/>
     <path d="M15 19h14M15 24h9" stroke="#C75B12" stroke-width="1.6" stroke-linecap="round"/>
@@ -517,11 +548,6 @@
     <circle cx="22" cy="31" r="1.6" fill="#C75B12"/>
   </svg>`;
 
-/* ─────────────────────────────────────────────────────────────
-   PRODUCTS DATA (fallback — used if products.json fails to load)
-   Primary source is products.json — edit that file to add/update
-   products. This array is only used as a safety fallback.
-───────────────────────────────────────────────────────────── */
   const FALLBACK_PRODUCTS = [
     {
       id:      "app-001",
@@ -533,7 +559,8 @@
       desc:    "Shopkeeper helps small business owners track sales, monitor inventory, and understand business growth — all from their Android device. Simple, fast, and built for everyday use.",
       image:   "images/app-banner.png",
       icon:    "images/app-icon.png",
-      apkUrl:  "https://drive.google.com/uc?export=download&id=1a7rml03bOGWjY3kAgrIaJSyhJieJ1roC"
+      apkUrl:  "https://drive.google.com/uc?export=download&id=1a7rml03bOGWjY3kAgrIaJSyhJieJ1roC",
+      webUrl:  "shopkeeper/"
     }
   ];
 
@@ -544,14 +571,10 @@
       const data = await res.json();
       return Array.isArray(data) && data.length ? data : FALLBACK_PRODUCTS;
     } catch (err) {
-      // fetch failed (e.g. opened locally via file://) — use fallback
       return FALLBACK_PRODUCTS;
     }
   }
 
-/* ─────────────────────────────────────────────────────────────
-   BUILD PRODUCT CARDS
-───────────────────────────────────────────────────────────── */
   function buildGrid(products) {
     const skeleton = document.getElementById('skeletonGrid');
     const grid     = document.getElementById('productsGrid');
@@ -606,14 +629,11 @@
       });
 
       grid.appendChild(card);
-      // Trigger reveal
       requestAnimationFrame(() => revealObs.observe(card));
     });
   }
 
-/* ─────────────────────────────────────────────────────────────
-   MODAL
-───────────────────────────────────────────────────────────── */
+  /* ── MODAL ── */
   const overlay  = document.getElementById('overlay');
   const closeBtn = document.getElementById('modalClose');
 
@@ -655,10 +675,18 @@
       Android 6.0+
     </div>`;
 
-    // Download — APK URL placed on href, never shown visually
+    // Download button
     document.getElementById('modalDlBtn').href = p.apkUrl;
 
-    // Open
+    // Web app button — show only if webUrl is set
+    const webBtn = document.getElementById('modalWebBtn');
+    if (p.webUrl) {
+      webBtn.href = p.webUrl;
+      webBtn.removeAttribute('hidden');
+    } else {
+      webBtn.setAttribute('hidden', '');
+    }
+
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
     closeBtn.focus();
@@ -673,9 +701,7 @@
   overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-/* ─────────────────────────────────────────────────────────────
-   NAV
-───────────────────────────────────────────────────────────── */
+  /* ── NAV ── */
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 20); }, { passive: true });
 
@@ -692,17 +718,13 @@
     hamburger.setAttribute('aria-expanded', 'false'); document.body.style.overflow = '';
   }));
 
-/* ─────────────────────────────────────────────────────────────
-   SCROLL REVEAL
-───────────────────────────────────────────────────────────── */
+  /* ── SCROLL REVEAL ── */
   const revealObs = new IntersectionObserver(entries => entries.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
   }), { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
   document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-/* ─────────────────────────────────────────────────────────────
-   INIT
-───────────────────────────────────────────────────────────── */
+  /* ── INIT ── */
   loadProducts().then(buildGrid);
 </script>
 </body>
