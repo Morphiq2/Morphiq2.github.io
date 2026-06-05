@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Morphiq Technologies — Intelligent Digital Solutions</title>
@@ -209,6 +213,123 @@
     .why-row2 { flex-direction: column; align-items: center; }
     .why-row2 .why-card { width: 100%; max-width: 100%; }
   }
+
+  /* ─── GLOBAL TYPOGRAPHY & POLISH ─── */
+  :root {
+    --font: 'Poppins', sans-serif;
+    --font-serif: 'Poppins', sans-serif;
+  }
+  body { font-family: var(--font); }
+
+  .hero h1, .page-hero h1 { font-weight: 700; }
+
+  /* ─── MOBILE HERO FIX ─── */
+  @media (max-width: 900px) {
+    .hero { padding-top: calc(var(--nav-h) + 48px); padding-bottom: 56px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 0; }
+    .hero-sub { max-width: 100%; }
+    .hero-visual { display: none; }
+  }
+
+  /* ─── MOBILE NAV BODY LOCK ─── */
+  .mobile-nav { display: flex; }
+
+  /* ─── BUTTON GROUP: stack on very small screens ─── */
+  @media (max-width: 480px) {
+    .btn-group { flex-direction: column; align-items: flex-start; }
+    .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+  }
+
+  /* ─── CONTACT FORM: full-width on mobile ─── */
+  @media (max-width: 680px) {
+    .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .contact-form { padding: 24px 18px; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+
+  /* ─── SERVICES / CARDS: 1 col on small mobile ─── */
+  @media (max-width: 480px) {
+    .services-grid { grid-template-columns: 1fr; }
+    .values-grid { grid-template-columns: 1fr; }
+    .why-row1 { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ─── FOOTER: cleaner mobile ─── */
+  @media (max-width: 640px) {
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+    .footer-bottom { flex-direction: column; text-align: center; gap: 8px; }
+  }
+
+  /* ─── STORY GRID ─── */
+  @media (max-width: 768px) {
+    .story-grid { grid-template-columns: 1fr; gap: 40px; }
+  }
+
+  /* ─── PROCESS GRID ─── */
+  @media (max-width: 640px) {
+    .process-grid { grid-template-columns: 1fr 1fr; }
+    .process-step::after { display: none; }
+  }
+  @media (max-width: 380px) {
+    .process-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ─── SECTION PADDING TIGHTEN ON SMALL ─── */
+  @media (max-width: 480px) {
+    section { padding: 52px 0; }
+    .page-hero { padding-top: calc(var(--nav-h) + 40px); padding-bottom: 40px; }
+    .page-hero h1 { font-size: 28px; }
+  }
+
+  /* ─── PRODUCTS GRID ─── */
+  @media (max-width: 420px) {
+    .products-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  }
+
+  /* ─── MODAL FULL SCREEN ON SMALL ─── */
+  @media (max-width: 480px) {
+    .overlay { padding: 0; align-items: flex-end; }
+    .modal { max-height: 94vh; border-radius: 20px 20px 0 0; }
+    .modal-banner { border-radius: 20px 20px 0 0; }
+  }
+
+  /* ─── PARTNERS GRID ─── */
+  @media (max-width: 480px) {
+    .partners-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ─── PORTFOLIO GRID ─── */
+  @media (max-width: 480px) {
+    .portfolio-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ─── FILTER TABS SCROLLABLE ─── */
+  @media (max-width: 560px) {
+    .filter-tabs { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .filter-tabs::-webkit-scrollbar { display: none; }
+    .filter-tab { flex-shrink: 0; }
+  }
+
+  /* ─── WHY CARDS 2-COL ON MOBILE ─── */
+  @media (max-width: 480px) {
+    .why-row1, .why-row2 { grid-template-columns: 1fr 1fr; }
+    .why-row2 { display: grid; }
+    .why-row2 .why-card { width: 100%; max-width: 100%; }
+  }
+
+  /* ─── CONTAINER HORIZONTAL PADDING ─── */
+  @media (max-width: 480px) {
+    .container { padding: 0 16px; }
+  }
+
+  /* ─── SKIP LINK (accessibility) ─── */
+  .skip-link {
+    position: absolute; left: -9999px; top: auto; z-index: 2000;
+    background: var(--clr-accent); color: #fff; padding: 8px 16px;
+    font-size: 14px; font-weight: 600; border-radius: 0 0 8px 8px;
+  }
+  .skip-link:focus { left: 50%; transform: translateX(-50%); }
+
 </style>
 </head>
 <body>
@@ -234,7 +355,7 @@
 </nav>
 
 <div class="mobile-nav" id="mobileNav" role="dialog" aria-modal="true">
-  <a href="index.html" class="mobile-link class="active"">Home</a>
+  <a href="index.html" class="mobile-link active">Home</a>
   <a href="services.html" class="mobile-link">Services</a>
   <a href="products.html" class="mobile-link">Products</a>
   <a href="about.html" class="mobile-link">About</a>
@@ -242,7 +363,7 @@
 </div>
 
 <!-- ── HERO ── -->
-<section class="hero" id="home">
+<section class="hero" id="main-content" id="home">
   <div class="blob1"></div>
   <div class="blob2"></div>
   <div class="container">
@@ -259,7 +380,6 @@
         <div class="btn-group">
           <a href="contact.html" class="btn-primary">
             Start a Project
-            <svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
           <a href="products.html" class="btn-secondary">Explore Products</a>
         </div>
@@ -415,7 +535,7 @@
       <h2 style="font-size:clamp(26px,3vw,40px);letter-spacing:-.02em;font-weight:700;margin-bottom:16px;">Let's Turn Your Vision Into Software</h2>
       <p style="font-size:16px;color:var(--clr-text-muted);max-width:500px;margin:0 auto 36px;">Whether you need a custom system, a mobile app, or an AI tool — we're here to build it with you.</p>
       <div class="btn-group" style="justify-content:center;">
-        <a href="contact.html" class="btn-primary">Start a Project <svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="contact.html" class="btn-primary">Start a Project</a>
         <a href="services.html" class="btn-secondary">View Services</a>
       </div>
     </div>

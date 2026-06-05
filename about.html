@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>About — Morphiq Technologies</title>
@@ -299,6 +303,123 @@
     .footer-grid { grid-template-columns: 1fr; gap: 36px; }
     .footer-bottom { flex-direction: column; text-align: center; }
   }
+
+  /* ─── GLOBAL TYPOGRAPHY & POLISH ─── */
+  :root {
+    --font: 'Poppins', sans-serif;
+    --font-serif: 'Poppins', sans-serif;
+  }
+  body { font-family: var(--font); }
+
+  .hero h1, .page-hero h1 { font-weight: 700; }
+
+  /* ─── MOBILE HERO FIX ─── */
+  @media (max-width: 900px) {
+    .hero { padding-top: calc(var(--nav-h) + 48px); padding-bottom: 56px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 0; }
+    .hero-sub { max-width: 100%; }
+    .hero-visual { display: none; }
+  }
+
+  /* ─── MOBILE NAV BODY LOCK ─── */
+  .mobile-nav { display: flex; }
+
+  /* ─── BUTTON GROUP: stack on very small screens ─── */
+  @media (max-width: 480px) {
+    .btn-group { flex-direction: column; align-items: flex-start; }
+    .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+  }
+
+  /* ─── CONTACT FORM: full-width on mobile ─── */
+  @media (max-width: 680px) {
+    .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .contact-form { padding: 24px 18px; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+
+  /* ─── SERVICES / CARDS: 1 col on small mobile ─── */
+  @media (max-width: 480px) {
+    .services-grid { grid-template-columns: 1fr; }
+    .values-grid { grid-template-columns: 1fr; }
+    .why-row1 { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ─── FOOTER: cleaner mobile ─── */
+  @media (max-width: 640px) {
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+    .footer-bottom { flex-direction: column; text-align: center; gap: 8px; }
+  }
+
+  /* ─── STORY GRID ─── */
+  @media (max-width: 768px) {
+    .story-grid { grid-template-columns: 1fr; gap: 40px; }
+  }
+
+  /* ─── PROCESS GRID ─── */
+  @media (max-width: 640px) {
+    .process-grid { grid-template-columns: 1fr 1fr; }
+    .process-step::after { display: none; }
+  }
+  @media (max-width: 380px) {
+    .process-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ─── SECTION PADDING TIGHTEN ON SMALL ─── */
+  @media (max-width: 480px) {
+    section { padding: 52px 0; }
+    .page-hero { padding-top: calc(var(--nav-h) + 40px); padding-bottom: 40px; }
+    .page-hero h1 { font-size: 28px; }
+  }
+
+  /* ─── PRODUCTS GRID ─── */
+  @media (max-width: 420px) {
+    .products-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  }
+
+  /* ─── MODAL FULL SCREEN ON SMALL ─── */
+  @media (max-width: 480px) {
+    .overlay { padding: 0; align-items: flex-end; }
+    .modal { max-height: 94vh; border-radius: 20px 20px 0 0; }
+    .modal-banner { border-radius: 20px 20px 0 0; }
+  }
+
+  /* ─── PARTNERS GRID ─── */
+  @media (max-width: 480px) {
+    .partners-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ─── PORTFOLIO GRID ─── */
+  @media (max-width: 480px) {
+    .portfolio-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ─── FILTER TABS SCROLLABLE ─── */
+  @media (max-width: 560px) {
+    .filter-tabs { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .filter-tabs::-webkit-scrollbar { display: none; }
+    .filter-tab { flex-shrink: 0; }
+  }
+
+  /* ─── WHY CARDS 2-COL ON MOBILE ─── */
+  @media (max-width: 480px) {
+    .why-row1, .why-row2 { grid-template-columns: 1fr 1fr; }
+    .why-row2 { display: grid; }
+    .why-row2 .why-card { width: 100%; max-width: 100%; }
+  }
+
+  /* ─── CONTAINER HORIZONTAL PADDING ─── */
+  @media (max-width: 480px) {
+    .container { padding: 0 16px; }
+  }
+
+  /* ─── SKIP LINK (accessibility) ─── */
+  .skip-link {
+    position: absolute; left: -9999px; top: auto; z-index: 2000;
+    background: var(--clr-accent); color: #fff; padding: 8px 16px;
+    font-size: 14px; font-weight: 600; border-radius: 0 0 8px 8px;
+  }
+  .skip-link:focus { left: 50%; transform: translateX(-50%); }
+
 </style>
 </head>
 <body>
@@ -327,12 +448,12 @@
   <a href="index.html" class="mobile-link">Home</a>
   <a href="services.html" class="mobile-link">Services</a>
   <a href="products.html" class="mobile-link">Products</a>
-  <a href="about.html" class="mobile-link class="active"">About</a>
+  <a href="about.html" class="mobile-link active">About</a>
   <a href="contact.html" class="mobile-link m-cta">Contact</a>
 </div>
 
 <!-- ── PAGE HERO ── -->
-<section class="page-hero">
+<section class="page-hero" id="main-content">
   <div class="container">
     <div class="page-hero-inner">
 
