@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shopkeeper — Sign in</title>
+<link rel="stylesheet" href="css/styles.css" />
+<link rel="icon" type="image/jpeg" href="assets/logo.jpg" />
+<style>
+  body{background:linear-gradient(160deg,#EEF2FF 0%,#F2F4F8 60%)}
+  .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .auth-card{width:420px;max-width:100%;background:#fff;border-radius:18px;box-shadow:var(--shadow-lg);padding:32px}
+  .auth-logo{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .auth-logo .mark{width:46px;height:46px;border-radius:50%;overflow:hidden;flex-shrink:0}
+  .auth-logo .mark img{width:100%;height:100%;object-fit:cover}
+  .auth-logo h1{font-size:19px;font-weight:800;letter-spacing:-.4px}
+  .auth-logo p{font-size:11.5px;color:var(--text-sub);font-weight:500}
+  .auth-tabs{display:flex;background:var(--page-bg);border-radius:10px;padding:4px;margin-bottom:22px}
+  .auth-tab{flex:1;text-align:center;padding:9px;border-radius:8px;font-size:13px;font-weight:700;color:var(--text-sub)}
+  .auth-tab.active{background:#fff;color:var(--blue);box-shadow:var(--shadow-xs)}
+  .auth-step-title{font-size:13px;font-weight:700;color:var(--text-sub);margin:18px 0 12px}
+  .auth-step-title:first-child{margin-top:0}
+  #signupPanel{display:none}
+  .err{font-size:11.5px;color:var(--red);margin-top:5px}
+</style>
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="mark"><img src="assets/logo.jpg" alt="Shopkeeper" /></div>
+        <div><h1>Shopkeeper</h1><p>POS &amp; inventory management</p></div>
+      </div>
+
+      <div class="auth-tabs">
+        <div class="auth-tab active" data-tab="login">Sign in</div>
+        <div class="auth-tab" data-tab="signup">Create account</div>
+      </div>
+
+      <!-- ── Sign in ─────────────────────────────────────────────────── -->
+      <div id="loginPanel">
+        <div class="field mb-16"><label>Email</label><input class="input" type="email" id="loginEmail" autocomplete="email" /></div>
+        <div class="field mb-8"><label>Password</label><input class="input" type="password" id="loginPassword" autocomplete="current-password" /></div>
+        <div id="loginErr" class="err" style="display:none"></div>
+        <button class="btn btn-primary btn-block btn-lg mt-16" id="loginBtn">Sign in</button>
+      </div>
+
+      <!-- ── Create account ──────────────────────────────────────────── -->
+      <div id="signupPanel">
+        <p class="auth-step-title">Your details</p>
+        <div class="field mb-12"><label>Full name</label><input class="input" id="suName" /></div>
+        <div class="field mb-12"><label>Email</label><input class="input" type="email" id="suEmail" /></div>
+        <div class="field mb-12"><label>Phone</label><input class="input" id="suPhone" /></div>
+        <div class="field mb-12"><label>Address</label><input class="input" id="suAddress" /></div>
+        <div class="field mb-12"><label>Password</label><input class="input" type="password" id="suPassword" /></div>
+        <div class="field mb-16"><label>Confirm password</label><input class="input" type="password" id="suPassword2" /></div>
+
+        <p class="auth-step-title">Your business</p>
+        <div class="field mb-12"><label>Business name</label><input class="input" id="suBizName" /></div>
+        <div class="field mb-16"><label>Tax ID <span class="text-faint">(optional)</span></label><input class="input" id="suBizTax" /></div>
+
+        <div id="signupErr" class="err" style="display:none"></div>
+        <button class="btn btn-primary btn-block btn-lg" id="signupBtn">Create account</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="js/auth.js"></script>
+</body>
+</html>
