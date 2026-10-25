@@ -3,7 +3,7 @@
 <head>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -209,10 +209,11 @@
   .skip-link:focus { left: 50%; transform: translateX(-50%); }
 
 </style>
+<link rel="stylesheet" href="site.css">
 </head>
 <body>
 
-<nav id="navbar">
+<nav id="navbar" class="on-hero">
   <div class="container nav-inner">
     <a href="index.html" class="logo">
       <img src="logo.png" alt="Morphiq Technologies logo" style="height:32px;width:auto;display:block;" onerror="this.style.display='none'">
@@ -242,24 +243,30 @@
   <div class="container">
     <div class="section-label">Portfolio</div>
     <h1>Projects We're Proud Of</h1>
-    <p>A selection of systems, apps, and platforms we've designed and delivered for clients across multiple industries.</p>
+    <p>Apps and websites we've designed, built, and shipped.</p>
   </div>
 </div>
 
 <section>
   <div class="container">
-    <div class="filter-tabs" role="tablist" aria-label="Filter projects">
-      <button class="filter-tab active" data-filter="all">All Projects</button>
-      <button class="filter-tab" data-filter="web">Web App</button>
-      <button class="filter-tab" data-filter="mobile">Mobile App</button>
-      <button class="filter-tab" data-filter="ai">AI System</button>
-      <button class="filter-tab" data-filter="ecom">E-Commerce</button>
-      <button class="filter-tab" data-filter="auto">Automation</button>
-    </div>
-
     <div class="portfolio-grid" id="portfolioGrid">
 
-      <div class="portfolio-card reveal reveal-delay-1" data-category="web">
+      <div class="portfolio-card reveal reveal-delay-1">
+        <div class="portfolio-img" style="background:#FFF4F0;">
+          <div class="portfolio-mockup-window">
+            <div class="pf-window-bar"><div class="pf-dot" style="background:#FF5F56;"></div><div class="pf-dot" style="background:#FFBD2E;"></div><div class="pf-dot" style="background:#27C93F;"></div></div>
+            <div class="pf-content"><div class="pf-line accent" style="width:60%;"></div><div class="pf-line" style="width:90%;"></div><div class="pf-line" style="width:75%;"></div><div class="pf-line accent" style="width:45%;"></div><div class="pf-line" style="width:80%;"></div></div>
+          </div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-tags"><span class="portfolio-tag">Mobile App</span><span class="portfolio-tag">Flutter</span><span class="portfolio-tag">Firebase</span></div>
+          <h3>Shopkeeper</h3>
+          <p>A point-of-sale app for small businesses — inventory, sales, expenses and credit tracking in one place.</p>
+          <a class="portfolio-link" href="https://play.google.com/store/apps/details?id=com.Morphitech.shopkeeper" target="_blank" rel="noopener">View on Google Play →</a>
+        </div>
+      </div>
+
+      <div class="portfolio-card reveal reveal-delay-2">
         <div class="portfolio-img" style="background:#F0F4FF;">
           <div class="portfolio-mockup-window">
             <div class="pf-window-bar"><div class="pf-dot" style="background:#FF5F56;"></div><div class="pf-dot" style="background:#FFBD2E;"></div><div class="pf-dot" style="background:#27C93F;"></div></div>
@@ -267,79 +274,23 @@
           </div>
         </div>
         <div class="portfolio-info">
-          <div class="portfolio-tags"><span class="portfolio-tag">Web App</span><span class="portfolio-tag">React</span><span class="portfolio-tag">Node.js</span></div>
-          <h3>ZeroGap ERP Portal</h3>
-          <p>A full-stack enterprise resource planning platform for a manufacturing firm — covering procurement, inventory, and reporting across 5 branches.</p>
+          <div class="portfolio-tags"><span class="portfolio-tag">Website</span><span class="portfolio-tag">HTML</span><span class="portfolio-tag">CSS</span><span class="portfolio-tag">JavaScript</span></div>
+          <h3>Morphiq Technologies Website</h3>
+          <p>Our own company website — fast, responsive pages for our services, products, and contact enquiries.</p>
         </div>
       </div>
 
-      <div class="portfolio-card reveal reveal-delay-2" data-category="mobile">
-        <div class="portfolio-img" style="background:#FFF4F0;">
-          <div class="portfolio-mockup-window">
-            <div class="pf-window-bar"><div class="pf-dot" style="background:#FF5F56;"></div><div class="pf-dot" style="background:#FFBD2E;"></div><div class="pf-dot" style="background:#27C93F;"></div></div>
-            <div class="pf-content"><div class="pf-line" style="width:50%;"></div><div class="pf-line accent" style="width:85%;"></div><div class="pf-line" style="width:65%;"></div><div class="pf-line accent" style="width:40%;"></div><div class="pf-line" style="width:70%;"></div></div>
-          </div>
-        </div>
-        <div class="portfolio-info">
-          <div class="portfolio-tags"><span class="portfolio-tag">Mobile App</span><span class="portfolio-tag">Flutter</span><span class="portfolio-tag">Firebase</span></div>
-          <h3>Ridewise Logistics App</h3>
-          <p>A logistics and driver management mobile app with live GPS tracking, delivery scheduling, and customer notifications for a transport startup.</p>
-        </div>
-      </div>
-
-      <div class="portfolio-card reveal reveal-delay-3" data-category="ai">
+      <div class="portfolio-card reveal reveal-delay-3">
         <div class="portfolio-img" style="background:#F4FFF8;">
           <div class="portfolio-mockup-window">
             <div class="pf-window-bar"><div class="pf-dot" style="background:#FF5F56;"></div><div class="pf-dot" style="background:#FFBD2E;"></div><div class="pf-dot" style="background:#27C93F;"></div></div>
-            <div class="pf-content"><div class="pf-line accent" style="width:70%;"></div><div class="pf-line" style="width:95%;"></div><div class="pf-line" style="width:55%;"></div><div class="pf-line" style="width:80%;"></div><div class="pf-line accent" style="width:35%;"></div></div>
+            <div class="pf-content"><div class="pf-line accent" style="width:60%;"></div><div class="pf-line" style="width:90%;"></div><div class="pf-line" style="width:75%;"></div><div class="pf-line accent" style="width:45%;"></div><div class="pf-line" style="width:80%;"></div></div>
           </div>
         </div>
         <div class="portfolio-info">
-          <div class="portfolio-tags"><span class="portfolio-tag">AI System</span><span class="portfolio-tag">Python</span><span class="portfolio-tag">FastAPI</span></div>
-          <h3>MedBot Clinical AI</h3>
-          <p>An AI-assisted triage and appointment booking system for a private clinic network — reducing administrative workload by 70%.</p>
-        </div>
-      </div>
-
-      <div class="portfolio-card reveal reveal-delay-4" data-category="ecom">
-        <div class="portfolio-img" style="background:#FAFAF0;">
-          <div class="portfolio-mockup-window">
-            <div class="pf-window-bar"><div class="pf-dot" style="background:#FF5F56;"></div><div class="pf-dot" style="background:#FFBD2E;"></div><div class="pf-dot" style="background:#27C93F;"></div></div>
-            <div class="pf-content"><div class="pf-line" style="width:75%;"></div><div class="pf-line accent" style="width:55%;"></div><div class="pf-line" style="width:90%;"></div><div class="pf-line accent" style="width:60%;"></div><div class="pf-line" style="width:45%;"></div></div>
-          </div>
-        </div>
-        <div class="portfolio-info">
-          <div class="portfolio-tags"><span class="portfolio-tag">E-Commerce</span><span class="portfolio-tag">Next.js</span><span class="portfolio-tag">PostgreSQL</span></div>
-          <h3>Artisanal Market Platform</h3>
-          <p>A multi-vendor e-commerce platform for local artisans — live inventory, integrated payments, and seller analytics dashboards.</p>
-        </div>
-      </div>
-
-      <div class="portfolio-card reveal reveal-delay-1" data-category="auto">
-        <div class="portfolio-img" style="background:#F5F0FF;">
-          <div class="portfolio-mockup-window">
-            <div class="pf-window-bar"><div class="pf-dot" style="background:#FF5F56;"></div><div class="pf-dot" style="background:#FFBD2E;"></div><div class="pf-dot" style="background:#27C93F;"></div></div>
-            <div class="pf-content"><div class="pf-line accent" style="width:80%;"></div><div class="pf-line" style="width:60%;"></div><div class="pf-line accent" style="width:45%;"></div><div class="pf-line" style="width:75%;"></div><div class="pf-line" style="width:50%;"></div></div>
-          </div>
-        </div>
-        <div class="portfolio-info">
-          <div class="portfolio-tags"><span class="portfolio-tag">Automation</span><span class="portfolio-tag">n8n</span><span class="portfolio-tag">API</span></div>
-          <h3>SalesSync Automation Hub</h3>
-          <p>A sales automation platform integrating CRM, email, WhatsApp, and reporting — eliminating hours of manual follow-up daily.</p>
-        </div>
-      </div>
-
-      <div class="portfolio-card reveal reveal-delay-2" data-category="web">
-        <div class="portfolio-img" style="background:#F0FAFF;">
-          <div class="portfolio-mockup-window">
-            <div class="pf-window-bar"><div class="pf-dot" style="background:#FF5F56;"></div><div class="pf-dot" style="background:#FFBD2E;"></div><div class="pf-dot" style="background:#27C93F;"></div></div>
-            <div class="pf-content"><div class="pf-line" style="width:85%;"></div><div class="pf-line accent" style="width:65%;"></div><div class="pf-line" style="width:50%;"></div><div class="pf-line accent" style="width:75%;"></div><div class="pf-line" style="width:40%;"></div></div>
-          </div>
-        </div>
-        <div class="portfolio-info">
-          <div class="portfolio-tags"><span class="portfolio-tag">EdTech</span><span class="portfolio-tag">Mobile</span><span class="portfolio-tag">Video</span></div>
-          <h3>LearnBridge LMS</h3>
-          <p>A learning management system for educational institutions — live classes, assignments, progress tracking, and certification management.</p>
+          <div class="portfolio-tags"><span class="portfolio-tag">Website</span></div>
+          <h3>Lumiminds Zambia Website</h3>
+          <p>A website designed and built for Lumiminds Zambia.</p>
         </div>
       </div>
 
@@ -356,19 +307,20 @@
       Morphiq Technologies
     </a>
         <p>Building intelligent digital solutions for businesses and everyday users around the world.</p>
-        <div class="social-links">
-          <a href="#" class="social-link" aria-label="Twitter"><svg viewBox="0 0 15 15" fill="none"><path d="M13.5 1.5l-5 5.5m0 0L2 1.5m6.5 5.5L2 13.5m6.5-6.5l5 6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a>
-          <a href="#" class="social-link" aria-label="LinkedIn"><svg viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 6v5M4 4v.5M7 11V8.5c0-1.5 4-1.5 4 0V11M7 6v5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
-          <a href="#" class="social-link" aria-label="GitHub"><svg viewBox="0 0 15 15" fill="none"><path d="M7.5 1C3.91 1 1 3.91 1 7.5c0 2.87 1.86 5.3 4.44 6.16.32.06.44-.14.44-.31v-1.09c-1.8.39-2.18-.87-2.18-.87-.3-.75-.72-.95-.72-.95-.59-.4.04-.39.04-.39.65.04 1 .67 1 .67.58 1 1.52.71 1.89.54.06-.42.23-.71.41-.87-1.44-.16-2.95-.72-2.95-3.2 0-.71.25-1.28.67-1.73-.07-.16-.29-.82.06-1.71 0 0 .55-.18 1.78.67.52-.14 1.07-.21 1.62-.21s1.1.07 1.62.21c1.24-.85 1.78-.67 1.78-.67.35.89.13 1.55.06 1.71.42.45.67 1.02.67 1.73 0 2.49-1.52 3.04-2.96 3.2.23.2.44.59.44 1.19v1.77c0 .17.12.37.44.31C12.14 12.8 14 10.37 14 7.5 14 3.91 11.09 1 7.5 1z" fill="currentColor"/></svg></a>
-          <a href="#" class="social-link" aria-label="Instagram"><svg viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="13" height="13" rx="3" stroke="currentColor" stroke-width="1.2"/><circle cx="7.5" cy="7.5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="4" r=".6" fill="currentColor"/></svg></a>
-        </div>
       </div>
       <div class="footer-col"><h4>Company</h4><ul><li><a href="about.html">About Us</a></li><li><a href="portfolio.html">Portfolio</a></li><li><a href="products.html">Products</a></li><li><a href="contact.html">Contact</a></li></ul></div>
       <div class="footer-col"><h4>Services</h4><ul><li><a href="services.html">Software Development</a></li><li><a href="services.html">Mobile Apps</a></li><li><a href="services.html">Web Development</a></li><li><a href="services.html">AI &amp; Automation</a></li></ul></div>
-      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Cookie Policy</a></li></ul></div>
+      <div class="footer-col">
+        <h4>Get in Touch</h4>
+        <ul>
+          <li><a href="mailto:morphiqtechnologies@gmail.com">morphiqtechnologies@gmail.com</a></li>
+          <li><a href="https://wa.me/260777063437" target="_blank" rel="noopener">+260 777 063 437</a></li>
+          <li><a href="contact.html">Send a message</a></li>
+        </ul>
+      </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2025 <span class="footer-accent">Morphiq Technologies</span>. All rights reserved.</p>
+      <p>© <span data-year>2026</span> <span class="footer-accent">Morphiq Technologies</span>. All rights reserved.</p>
       <p>Built with precision. Designed with purpose.</p>
     </div>
   </div>
@@ -396,5 +348,6 @@
     });
   });
 </script>
+<script src="site.js"></script>
 </body>
 </html>

@@ -1,0 +1,65 @@
+/* ─────────────────────────────────────────────
+   site.css — shared styles that match the dark home hero.
+   Loaded after each page's own <style>, so it wins.
+───────────────────────────────────────────── */
+:root {
+  --clr-accent-bright: #E2762F;
+  --clr-hero-bg: #121212;
+  --font: 'Poppins', sans-serif;
+}
+body { font-family: var(--font); }
+
+/* ── Dark page header band ── */
+.page-hero {
+  background: var(--clr-hero-bg);
+  color: #fff;
+  border-bottom: none;
+  position: relative;
+  overflow: hidden;
+}
+.page-hero::before {
+  content: '';
+  position: absolute;
+  top: -220px; right: -180px;
+  width: 640px; height: 640px;
+  background: radial-gradient(circle, rgba(226,118,47,0.14) 0%, transparent 62%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.page-hero::after { display: none; }
+.page-hero .container { position: relative; z-index: 1; }
+.page-hero h1 { color: #fff; font-weight: 600; letter-spacing: -.03em; }
+.page-hero h1 em { font-style: normal; color: var(--clr-accent-bright); }
+.page-hero p,
+.page-hero .page-hero-sub { color: rgba(255,255,255,0.62); }
+.page-hero .section-label { background: rgba(226,118,47,0.12); color: var(--clr-accent-bright); }
+
+/* ── Nav while over the dark header ── */
+nav { transition: background .3s, border-color .3s, box-shadow .3s; }
+.logo { transition: color .3s; }
+.nav-links a { position: relative; }
+nav.on-hero { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; border-color: transparent; box-shadow: none; }
+nav.on-hero.dim { background: rgba(18,18,18,0.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-color: rgba(255,255,255,0.06); }
+nav.on-hero .logo { color: #fff; }
+nav.on-hero .nav-links a { color: rgba(255,255,255,0.72); }
+nav.on-hero .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.06); }
+nav.on-hero .nav-links a.active { color: var(--clr-accent-bright); }
+nav.on-hero .nav-links a.active::after { content: ''; position: absolute; left: 13px; right: 13px; bottom: -6px; height: 2px; border-radius: 2px; background: var(--clr-accent-bright); }
+nav.on-hero .nav-cta { background: transparent !important; color: var(--clr-accent-bright) !important; border: 1px solid var(--clr-accent-bright); }
+nav.on-hero .nav-cta:hover,
+nav.on-hero .nav-cta.active { background: var(--clr-accent-bright) !important; color: #fff !important; }
+nav.on-hero .nav-cta.active::after { display: none; }
+nav.on-hero .hamburger span { background: #fff; }
+
+/* ── Footer contact column ── */
+.footer-col .footer-contact { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.6; }
+.footer-col a { overflow-wrap: anywhere; }
+
+/* ── Contact form send failure ── */
+.form-fail { display: none; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px; font-size: 14px; color: #991b1b; text-align: center; margin-top: 16px; }
+.form-fail.show { display: block; }
+.form-fail a { text-decoration: underline; }
+
+/* ── Portfolio link ── */
+.portfolio-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-size: 13.5px; font-weight: 600; color: var(--clr-accent); }
+.portfolio-link:hover { text-decoration: underline; }

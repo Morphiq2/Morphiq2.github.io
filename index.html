@@ -3,7 +3,7 @@
 <head>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,10 +18,12 @@
     --clr-text: #1A1A1A;
     --clr-text-muted: #666666;
     --clr-accent: #C75B12;
+    --clr-accent-bright: #E2762F;
     --clr-accent-light: #F4E1D4;
     --clr-footer-bg: #1A1A1A;
     --clr-border: #E8E8E8;
     --clr-card-bg: #FFFFFF;
+    --clr-hero-bg: #121212;
     --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
     --radius-sm: 6px;
     --radius-md: 10px;
@@ -50,19 +52,19 @@
   .reveal-delay-4 { transition-delay: .4s; }
 
   /* ── NAV ── */
-  nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: rgba(255,255,255,0.93); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid transparent; z-index: 1000; transition: border-color .3s, box-shadow .3s; }
+  nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: rgba(255,255,255,0.93); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid transparent; z-index: 1000; transition: background .3s, border-color .3s, box-shadow .3s; }
   nav.scrolled { border-color: var(--clr-border); box-shadow: var(--shadow-sm); }
   .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 100%; }
-  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; letter-spacing: -.3px; color: var(--clr-text); }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; letter-spacing: -.3px; color: var(--clr-text); transition: color .3s; }
   .logo img { height: 32px; width: auto; display: block; }
   .nav-links { display: flex; align-items: center; gap: 2px; }
-  .nav-links a { font-size: 14px; font-weight: 500; color: var(--clr-text-muted); padding: 6px 13px; border-radius: var(--radius-sm); transition: color .2s, background .2s; }
+  .nav-links a { position: relative; font-size: 14px; font-weight: 500; color: var(--clr-text-muted); padding: 6px 13px; border-radius: var(--radius-sm); transition: color .2s, background .2s; }
   .nav-links a:hover { color: var(--clr-text); background: var(--clr-bg-alt); }
   .nav-links a.active { color: var(--clr-text); font-weight: 600; }
   .nav-cta { background: var(--clr-text) !important; color: #fff !important; padding: 7px 18px !important; border-radius: var(--radius-md) !important; transition: background .2s, transform .15s !important; }
   .nav-cta:hover { background: var(--clr-accent) !important; transform: translateY(-1px); }
   .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; z-index: 1001; }
-  .hamburger span { display: block; width: 22px; height: 2px; background: var(--clr-text); border-radius: 2px; transition: transform .3s, opacity .3s; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: var(--clr-text); border-radius: 2px; transition: transform .3s, opacity .3s, background .3s; }
   .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
   .hamburger.open span:nth-child(2) { opacity: 0; }
   .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
@@ -72,6 +74,18 @@
   .mobile-nav a:hover, .mobile-nav a.active { color: var(--clr-accent); background: var(--clr-accent-light); }
   .mobile-nav .m-cta { margin-top: 10px; background: var(--clr-text); color: #fff !important; font-size: 16px; }
   .mobile-nav .m-cta:hover { background: var(--clr-accent); }
+
+  /* Nav while sitting over the dark hero */
+  nav.on-hero { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; border-color: transparent; box-shadow: none; }
+  nav.on-hero.dim { background: rgba(18,18,18,0.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-color: rgba(255,255,255,0.06); }
+  nav.on-hero .logo { color: #fff; }
+  nav.on-hero .nav-links a { color: rgba(255,255,255,0.72); }
+  nav.on-hero .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.06); }
+  nav.on-hero .nav-links a.active { color: var(--clr-accent-bright); }
+  nav.on-hero .nav-links a.active::after { content: ''; position: absolute; left: 13px; right: 13px; bottom: -6px; height: 2px; border-radius: 2px; background: var(--clr-accent-bright); }
+  nav.on-hero .nav-cta { background: transparent !important; color: var(--clr-accent-bright) !important; border: 1px solid var(--clr-accent-bright); }
+  nav.on-hero .nav-cta:hover { background: var(--clr-accent-bright) !important; color: #fff !important; }
+  nav.on-hero .hamburger span { background: #fff; }
 
   /* ── SHARED ── */
   .section-label { display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--clr-accent); background: var(--clr-accent-light); padding: 5px 12px; border-radius: 100px; margin-bottom: 18px; }
@@ -83,90 +97,123 @@
   .btn-secondary:hover { border-color: var(--clr-text); background: var(--clr-bg-alt); transform: translateY(-2px); }
   .btn-group { display: flex; gap: 12px; flex-wrap: wrap; }
 
-  /* ── HERO ── */
-  .hero { padding: calc(var(--nav-h) + 72px) 0 80px; position: relative; overflow: hidden; }
-  .blob1 { position: absolute; top: -140px; right: -100px; width: 560px; height: 560px; background: radial-gradient(circle at 55% 45%, rgba(199,91,18,0.07) 0%, transparent 68%); border-radius: 50%; pointer-events: none; }
-  .blob2 { position: absolute; bottom: -100px; left: -80px; width: 360px; height: 360px; background: radial-gradient(circle, rgba(199,91,18,0.04) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
-  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; position: relative; z-index: 1; }
-  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: var(--clr-text-muted); border: 1px solid var(--clr-border); padding: 5px 14px; border-radius: 100px; margin-bottom: 26px; background: var(--clr-bg-alt); }
-  .eyebrow-dot { width: 6px; height: 6px; background: var(--clr-accent); border-radius: 50%; animation: pulse-dot 2s ease-in-out infinite; }
-  @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
-  .hero h1 { font-size: clamp(34px, 4.2vw, 56px); line-height: 1.1; letter-spacing: -.03em; margin-bottom: 22px; font-weight: 700; }
-  .hero h1 em { font-style: normal; color: var(--clr-accent); }
-  .hero-sub { font-size: 17px; color: var(--clr-text-muted); line-height: 1.72; max-width: 460px; margin-bottom: 36px; }
+  /* ══════════════════════════════════════════
+     HERO (dark)
+  ══════════════════════════════════════════ */
+  .hero { background: var(--clr-hero-bg); color: #fff; padding: calc(var(--nav-h) + 80px) 0 96px; position: relative; overflow: hidden; }
+  .hero-glow { position: absolute; top: -200px; right: -180px; width: 760px; height: 760px; background: radial-gradient(circle, rgba(226,118,47,0.13) 0%, transparent 62%); pointer-events: none; }
+  .hero-glow-2 { position: absolute; bottom: -260px; left: -220px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(226,118,47,0.05) 0%, transparent 65%); pointer-events: none; }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: center; position: relative; z-index: 1; }
 
-  /* ── ORBIT VISUAL ── */
-  .hero-visual { position: relative; height: 460px; display: flex; align-items: center; justify-content: center; user-select: none; }
+  .hero-eyebrow { display: flex; align-items: center; gap: 14px; font-size: 13px; font-weight: 500; letter-spacing: .28em; text-transform: uppercase; color: rgba(255,255,255,0.78); margin-bottom: 28px; }
+  .hero-eyebrow .dash { width: 26px; height: 2px; background: var(--clr-accent-bright); flex-shrink: 0; }
+  .hero h1 { font-size: clamp(38px, 4.4vw, 58px); line-height: 1.1; letter-spacing: -.035em; font-weight: 600; margin-bottom: 26px; color: #fff; }
+  .hero h1 span, .hero h1 em { display: block; white-space: nowrap; }
+  .hero h1 em { font-style: normal; color: var(--clr-accent-bright); }
+  .hero-sub { font-size: 17px; line-height: 1.75; color: rgba(255,255,255,0.62); max-width: 500px; margin-bottom: 40px; font-weight: 300; }
 
-  /* Static dashed ring — purely decorative */
-  .orbit-ring {
-    position: absolute;
-    width: 340px; height: 340px;
-    border-radius: 50%;
-    border: 1.5px dashed rgba(26,26,26,0.10);
-  }
-  /* Outer subtle ring */
-  .orbit-ring-outer {
-    position: absolute;
-    width: 440px; height: 440px;
-    border-radius: 50%;
-    border: 1px dashed rgba(199,91,18,0.08);
-  }
+  .hero-actions { display: flex; align-items: center; gap: 36px; flex-wrap: wrap; margin-bottom: 72px; }
+  .hero-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--clr-accent-bright); color: #fff; font-size: 15.5px; font-weight: 500; padding: 16px 34px; border-radius: 8px; box-shadow: 0 10px 30px rgba(226,118,47,0.22); transition: background .2s, transform .15s; }
+  .hero-btn:hover { background: var(--clr-accent); transform: translateY(-2px); }
+  .hero-btn svg, .hero-link svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .hero-link { display: inline-flex; align-items: center; gap: 14px; color: #fff; font-size: 15.5px; font-weight: 500; padding-bottom: 8px; border-bottom: 2px solid var(--clr-accent-bright); transition: gap .2s; }
+  .hero-link:hover { gap: 20px; }
 
-  /* Central logo orb */
-  .orb {
-    position: absolute;
-    width: 120px; height: 120px;
-    border-radius: 50%;
-    background: #fff;
-    border: 1.5px solid var(--clr-border);
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 0 0 12px rgba(26,26,26,0.04), 0 0 0 24px rgba(26,26,26,0.018), var(--shadow-lg);
-    z-index: 10;
-    overflow: hidden;
-  }
-  .orb img { width: 80px; height: auto; object-fit: contain; }
-  .orb-fallback { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; }
+  .hero-tagline { display: flex; align-items: center; gap: 22px; font-size: 14px; color: rgba(255,255,255,0.55); }
+  .hero-tagline .dash { width: 40px; height: 1px; background: rgba(255,255,255,0.35); flex-shrink: 0; }
 
-  /* Nodes are positioned by JS — no CSS rotation needed */
-  .node {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    will-change: transform;
-  }
+  /* ── Hero visual stage ── */
+  .hero-visual { position: relative; height: 500px; user-select: none; }
+  .stage { position: absolute; top: 50%; right: 0; width: 560px; height: 500px; transform: translateY(-50%); transform-origin: right center; }
 
-  .node-pill {
-    width: 56px; height: 56px;
-    border-radius: 16px;
-    background: #fff;
-    border: 1px solid var(--clr-border);
-    box-shadow: var(--shadow-md);
-    display: flex; align-items: center; justify-content: center;
-    transition: box-shadow .25s, transform .25s;
-  }
-  .node-pill svg { width: 24px; height: 24px; }
-  .node-label {
-    margin-top: 7px;
-    font-size: 10.5px; font-weight: 600;
-    color: var(--clr-text-muted);
-    letter-spacing: .04em;
-    white-space: nowrap;
-    background: #fff;
-    padding: 2px 8px;
-    border-radius: 5px;
-    border: 1px solid var(--clr-border);
-    box-shadow: var(--shadow-sm);
+  @keyframes floatA { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  @keyframes floatB { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+
+  /* Laptop */
+  .laptop { position: absolute; left: 44px; top: 24px; width: 400px; z-index: 1; }
+  .laptop-screen { background: #0f0f0f; border: 7px solid #262626; border-bottom-width: 9px; border-radius: 14px 14px 4px 4px; box-shadow: 0 30px 60px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.07); overflow: hidden; height: 252px; }
+  .laptop-base { height: 12px; margin: 0 -32px; background: linear-gradient(#3b3b3b, #1c1c1c); border-radius: 0 0 14px 14px; position: relative; box-shadow: 0 14px 30px rgba(0,0,0,.5); }
+  .laptop-base::before { content: ''; position: absolute; left: 50%; top: 0; transform: translateX(-50%); width: 70px; height: 5px; background: #151515; border-radius: 0 0 6px 6px; }
+
+  .dash-ui { display: grid; grid-template-columns: 78px 1fr; height: 100%; font-family: var(--font); color: #fff; }
+  .dash-side { background: #151515; border-right: 1px solid #222; padding: 10px 6px; }
+  .dash-brand { display: flex; align-items: center; gap: 5px; font-size: 6.5px; font-weight: 700; letter-spacing: .12em; margin: 0 4px 12px; }
+  .dash-brand svg { width: 11px; height: 8px; }
+  .dash-nav { display: flex; flex-direction: column; gap: 3px; }
+  .dash-nav div { display: flex; align-items: center; gap: 5px; font-size: 6px; color: rgba(255,255,255,.6); padding: 4px 5px; border-radius: 4px; }
+  .dash-nav div i { width: 6px; height: 6px; border: 1px solid currentColor; border-radius: 1.5px; flex-shrink: 0; }
+  .dash-nav div.on { background: var(--clr-accent-bright); color: #fff; }
+  .dash-main { padding: 9px 11px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .dash-top { display: flex; align-items: center; justify-content: flex-end; gap: 7px; }
+  .dash-search { flex: 0 0 110px; height: 12px; border-radius: 4px; background: #1d1d1d; border: 1px solid #262626; font-size: 5px; color: rgba(255,255,255,.35); display: flex; align-items: center; padding: 0 5px; margin-right: auto; margin-left: 40px; }
+  .dash-bell { width: 6px; height: 6px; border-radius: 2px 2px 3px 3px; background: rgba(255,255,255,.7); }
+  .dash-avatar { width: 12px; height: 12px; border-radius: 50%; background: #3a3a3a; font-size: 4.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .dash-title { font-size: 10px; font-weight: 600; line-height: 1.2; }
+  .dash-title small { display: block; font-size: 5.5px; font-weight: 400; color: rgba(255,255,255,.45); margin-top: 2px; }
+  .dash-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+  .dash-stat { background: #1a1a1a; border: 1px solid #232323; border-radius: 5px; padding: 6px; }
+  .dash-stat .l { font-size: 5px; color: rgba(255,255,255,.5); }
+  .dash-stat .v { font-size: 8.5px; font-weight: 600; margin: 2px 0 1px; white-space: nowrap; }
+  .dash-stat .d { font-size: 5px; color: #4ADE80; }
+  .dash-stat .d.down { color: #F87171; }
+  .dash-chart { background: #181818; border: 1px solid #232323; border-radius: 5px; padding: 7px 8px 4px; flex: 1; display: flex; flex-direction: column; }
+  .dash-chart-head { display: flex; justify-content: space-between; align-items: center; font-size: 6.5px; font-weight: 600; }
+  .dash-chart-head span { font-size: 4.8px; font-weight: 400; color: rgba(255,255,255,.55); background: #222; border-radius: 3px; padding: 2px 4px; }
+  .dash-chart svg { width: 100%; flex: 1; margin-top: 4px; }
+
+  /* Phone */
+  .phone { position: absolute; left: 0; top: 150px; width: 170px; height: 340px; background: #0f0f0f; border: 6px solid #2a2a2a; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.09); overflow: hidden; z-index: 3; padding: 7px 9px 6px; display: flex; flex-direction: column; animation: floatA 7s ease-in-out infinite; }
+  .phone-notch { position: absolute; top: 5px; left: 50%; transform: translateX(-50%); width: 52px; height: 13px; background: #000; border-radius: 10px; }
+  .ph-status { display: flex; justify-content: space-between; font-size: 6px; font-weight: 600; padding: 0 4px; margin-bottom: 12px; color: #fff; }
+  .ph-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .ph-brand { display: flex; align-items: center; gap: 5px; font-size: 8.5px; font-weight: 700; color: #fff; }
+  .ph-brand i { width: 12px; height: 12px; border-radius: 3px; background: var(--clr-accent-bright); display: inline-block; overflow: hidden; }
+  .ph-brand i img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ph-menu { width: 9px; height: 7px; border-top: 1.2px solid #fff; border-bottom: 1.2px solid #fff; position: relative; }
+  .ph-menu::after { content: ''; position: absolute; left: 0; right: 0; top: 2.2px; border-top: 1.2px solid #fff; }
+  .ph-greet { font-size: 6px; color: rgba(255,255,255,.65); margin-bottom: 1px; }
+  .ph-name { font-size: 8.5px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+  .ph-sales { background: linear-gradient(135deg, #8a4216 0%, #b45a1d 100%); border-radius: 8px; padding: 8px 9px; position: relative; margin-bottom: 7px; }
+  .ph-sales .l { font-size: 5.5px; color: rgba(255,255,255,.75); }
+  .ph-sales .v { font-size: 10px; font-weight: 700; color: #fff; margin: 2px 0; }
+  .ph-sales .d { font-size: 5.5px; color: #FBD3B4; }
+  .ph-sales svg { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); width: 14px; height: 12px; }
+  .ph-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .ph-tile { background: #1a1a1a; border: 1px solid #262626; border-radius: 8px; height: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-size: 6px; color: rgba(255,255,255,.85); }
+  .ph-tile b { width: 18px; height: 18px; border-radius: 5px; display: flex; align-items: center; justify-content: center; }
+  .ph-tile b svg { width: 10px; height: 10px; }
+  .ph-nav { margin-top: auto; display: flex; justify-content: space-around; padding-top: 6px; border-top: 1px solid #1f1f1f; }
+  .ph-nav div { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 4.8px; color: rgba(255,255,255,.5); }
+  .ph-nav div i { width: 7px; height: 7px; border: 1px solid currentColor; border-radius: 2px; }
+  .ph-nav div.on { color: var(--clr-accent-bright); }
+  .ph-nav div.on i { background: currentColor; }
+
+  /* Code card */
+  .code-card { position: absolute; right: -16px; top: 60px; width: 186px; white-space: nowrap; background: rgba(24,24,24,.94); border: 1px solid #2c2c2c; border-radius: 10px; padding: 11px 13px 13px; box-shadow: 0 20px 40px rgba(0,0,0,.45); z-index: 2; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 8px; line-height: 2; color: #e6e6e6; animation: floatB 8s ease-in-out infinite; }
+  .code-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .code-head .tag { color: var(--clr-accent-bright); font-weight: 700; font-size: 10px; }
+  .code-head .dots { display: flex; gap: 4px; }
+  .code-head .dots i { width: 5px; height: 5px; border-radius: 50%; background: #555; }
+  .code-card .ind { padding-left: 9px; margin-left: 2px; border-left: 1px solid #333; }
+  .c-blue { color: #6CB6FF; }
+  .c-org { color: var(--clr-accent-bright); }
+
+  /* AI card */
+  .ai-card { position: absolute; right: 14px; top: 290px; width: 200px; background: rgba(24,24,24,.95); border: 1px solid #2c2c2c; border-radius: 12px; padding: 14px 16px 16px; box-shadow: 0 20px 40px rgba(0,0,0,.45); z-index: 2; animation: floatA 9s ease-in-out infinite 1s; }
+  .ai-card h4 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+  .ai-row { display: flex; align-items: center; gap: 12px; }
+  .ai-row svg { width: 64px; height: 64px; flex-shrink: 0; }
+  .ai-row p { font-size: 9px; line-height: 1.6; color: rgba(255,255,255,.7); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .phone, .code-card, .ai-card { animation: none; }
   }
 
   /* ── WHY GRID — 4 then 2 centered ── */
   .why-header { text-align: center; margin-bottom: 52px; }
   .why-header h2 { font-size: clamp(26px, 3vw, 40px); font-weight: 700; letter-spacing: -.02em; margin-bottom: 14px; }
   .why-header p { font-size: 16px; color: var(--clr-text-muted); max-width: 520px; margin: 0 auto; }
-  /* Row 1: always 4 columns */
   .why-row1 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
-  /* Row 2: 2 cards centered */
   .why-row2 { display: flex; justify-content: center; gap: 16px; }
   .why-row2 .why-card { width: calc(25% - 6px); min-width: 180px; max-width: 280px; }
 
@@ -196,6 +243,8 @@
   .footer-accent { color: var(--clr-accent); }
 
   /* ── RESPONSIVE ── */
+  @media (max-width: 1180px) { .stage { transform: translateY(-50%) scale(.88); } }
+  @media (max-width: 1040px) { .stage { transform: translateY(-50%) scale(.78); } .hero-visual { height: 420px; } }
   @media (max-width: 900px) {
     .nav-links { display: none; }
     .hamburger { display: flex; }
@@ -209,7 +258,9 @@
   @media (max-width: 600px) {
     section { padding: 64px 0; }
     .footer-grid { grid-template-columns: 1fr; gap: 36px; }
-    .hero h1 { font-size: 30px; }
+    .hero h1 { font-size: 34px; }
+    .hero-eyebrow { font-size: 11px; letter-spacing: .2em; }
+    .hero-actions { gap: 26px; margin-bottom: 48px; }
     .btn-group { flex-direction: column; }
     .footer-bottom { flex-direction: column; text-align: center; }
     .why-row1 { grid-template-columns: 1fr 1fr; }
@@ -224,11 +275,11 @@
   }
   body { font-family: var(--font); }
 
-  .hero h1, .page-hero h1 { font-weight: 700; }
+  .page-hero h1 { font-weight: 700; }
 
   /* ─── MOBILE HERO FIX ─── */
   @media (max-width: 900px) {
-    .hero { padding-top: calc(var(--nav-h) + 48px); padding-bottom: 56px; }
+    .hero { padding-top: calc(var(--nav-h) + 56px); padding-bottom: 64px; }
     .hero-grid { grid-template-columns: 1fr; gap: 0; }
     .hero-sub { max-width: 100%; }
     .hero-visual { display: none; }
@@ -263,54 +314,12 @@
     .footer-bottom { flex-direction: column; text-align: center; gap: 8px; }
   }
 
-  /* ─── STORY GRID ─── */
-  @media (max-width: 768px) {
-    .story-grid { grid-template-columns: 1fr; gap: 40px; }
-  }
-
-  /* ─── PROCESS GRID ─── */
-  @media (max-width: 640px) {
-    .process-grid { grid-template-columns: 1fr 1fr; }
-    .process-step::after { display: none; }
-  }
-  @media (max-width: 380px) {
-    .process-grid { grid-template-columns: 1fr; }
-  }
-
   /* ─── SECTION PADDING TIGHTEN ON SMALL ─── */
   @media (max-width: 480px) {
     section { padding: 52px 0; }
-    .page-hero { padding-top: calc(var(--nav-h) + 40px); padding-bottom: 40px; }
-    .page-hero h1 { font-size: 28px; }
-  }
-
-  /* ─── PRODUCTS GRID ─── */
-  @media (max-width: 420px) {
-    .products-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  }
-
-  /* ─── MODAL FULL SCREEN ON SMALL ─── */
-  @media (max-width: 480px) {
-    .overlay { padding: 0; align-items: flex-end; }
-    .modal { max-height: 94vh; border-radius: 20px 20px 0 0; }
-    .modal-banner { border-radius: 20px 20px 0 0; }
-  }
-
-  /* ─── PARTNERS GRID ─── */
-  @media (max-width: 480px) {
-    .partners-grid { grid-template-columns: 1fr; }
-  }
-
-  /* ─── PORTFOLIO GRID ─── */
-  @media (max-width: 480px) {
-    .portfolio-grid { grid-template-columns: 1fr; }
-  }
-
-  /* ─── FILTER TABS SCROLLABLE ─── */
-  @media (max-width: 560px) {
-    .filter-tabs { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-    .filter-tabs::-webkit-scrollbar { display: none; }
-    .filter-tab { flex-shrink: 0; }
+    .hero { padding-top: calc(var(--nav-h) + 40px); padding-bottom: 52px; }
+    .hero h1 { font-size: 31px; }
+    .hero-btn { width: 100%; justify-content: center; }
   }
 
   /* ─── WHY CARDS 2-COL ON MOBILE ─── */
@@ -334,11 +343,12 @@
   .skip-link:focus { left: 50%; transform: translateX(-50%); }
 
 </style>
+<link rel="stylesheet" href="site.css">
 </head>
 <body>
 
 <!-- ── NAVBAR ── -->
-<nav id="navbar">
+<nav id="navbar" class="on-hero">
   <div class="container nav-inner">
     <a href="index.html" class="logo">
       <img src="logo.png" alt="Morphiq Technologies logo" onerror="this.style.display='none'">
@@ -366,106 +376,149 @@
 </div>
 
 <!-- ── HERO ── -->
-<section class="hero" id="main-content" id="home">
-  <div class="blob1"></div>
-  <div class="blob2"></div>
-  <div class="container">
-    <div class="hero-grid">
+<section class="hero" id="main-content">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="container hero-grid">
 
-      <!-- Text -->
-      <div>
-        <div class="eyebrow">
-          <div class="eyebrow-dot"></div>
-          Software · AI · Mobile · Web
-        </div>
-        <h1>Building <em>Intelligent</em><br>Digital Solutions</h1>
-        <p class="hero-sub">We create scalable software platforms, mobile applications, and custom digital systems for businesses and everyday users.</p>
-        <div class="btn-group">
-          <a href="contact.html" class="btn-primary">
-            Start a Project
-          </a>
-          <a href="products.html" class="btn-secondary">Explore Products</a>
-        </div>
+    <!-- Text -->
+    <div class="hero-copy">
+      <div class="hero-eyebrow"><span class="dash"></span>Software · AI · Mobile · Web</div>
+      <h1><span>We turn ideas into</span> <em>intelligent digital</em> <span>solutions.</span></h1>
+      <p class="hero-sub">We build custom software, mobile applications, and intelligent digital systems that solve real problems and help businesses move forward.</p>
+      <div class="hero-actions">
+        <a href="contact.html" class="hero-btn">
+          Start a Project
+          <svg viewBox="0 0 14 14" fill="none"><path d="M4 10L10 4M5 4h5v5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="products.html" class="hero-link">
+          Explore Our Work
+          <svg viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
       </div>
+      <div class="hero-tagline"><span class="dash"></span>Built with purpose. Designed for people. Engineered to scale.</div>
+    </div>
 
-      <!-- Orbit visual -->
-      <div class="hero-visual" aria-hidden="true">
+    <!-- Device visual -->
+    <div class="hero-visual" aria-hidden="true">
+      <div class="stage">
 
-        <!-- Decorative static rings -->
-        <div class="orbit-ring"></div>
-        <div class="orbit-ring-outer"></div>
+        <!-- Laptop dashboard -->
+        <div class="laptop">
+          <div class="laptop-screen">
+            <div class="dash-ui">
+              <div class="dash-side">
+                <div class="dash-brand">
+                  <svg viewBox="0 0 22 16" fill="none"><path d="M1 15V2l10 8L21 2v13" stroke="#E2762F" stroke-width="2.6" stroke-linejoin="round"/></svg>
+                  MORPHIQ
+                </div>
+                <div class="dash-nav">
+                  <div class="on"><i></i>Dashboard</div>
+                  <div><i></i>Projects</div>
+                  <div><i></i>Clients</div>
+                  <div><i></i>Team</div>
+                  <div><i></i>Settings</div>
+                </div>
+              </div>
+              <div class="dash-main">
+                <div class="dash-top">
+                  <div class="dash-search">Search…</div>
+                  <div class="dash-bell"></div>
+                  <div class="dash-avatar">MK</div>
+                </div>
+                <div class="dash-title">Dashboard<small>Here's what's happening with your business.</small></div>
+                <div class="dash-stats">
+                  <div class="dash-stat"><div class="l">Total Projects</div><div class="v">12</div><div class="d">↑ 20%</div></div>
+                  <div class="dash-stat"><div class="l">Active Clients</div><div class="v">8</div><div class="d">↑ 14%</div></div>
+                  <div class="dash-stat"><div class="l">Revenue</div><div class="v">ZMW 48,200</div><div class="d">↑ 18%</div></div>
+                  <div class="dash-stat"><div class="l">Pending Tasks</div><div class="v">5</div><div class="d down">↓ 9%</div></div>
+                </div>
+                <div class="dash-chart">
+                  <div class="dash-chart-head">Project Progress <span>Last 6 months ▾</span></div>
+                  <svg viewBox="0 0 300 95" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#E2762F" stop-opacity=".35"/>
+                        <stop offset="100%" stop-color="#E2762F" stop-opacity="0"/>
+                      </linearGradient>
+                    </defs>
+                    <g stroke="#2a2a2a" stroke-width=".6" stroke-dasharray="2 3">
+                      <line x1="0" y1="10" x2="300" y2="10"/><line x1="0" y1="35" x2="300" y2="35"/><line x1="0" y1="60" x2="300" y2="60"/><line x1="0" y1="84" x2="300" y2="84"/>
+                    </g>
+                    <path d="M8 74 C 25 68, 40 58, 58 62 S 88 70, 104 56 S 132 36, 150 46 S 178 62, 196 50 S 224 32, 242 38 S 270 26, 292 14 L292 84 L8 84 Z" fill="url(#chartFill)"/>
+                    <path d="M8 74 C 25 68, 40 58, 58 62 S 88 70, 104 56 S 132 36, 150 46 S 178 62, 196 50 S 224 32, 242 38 S 270 26, 292 14" stroke="#E2762F" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+                    <circle cx="292" cy="14" r="2.4" fill="#E2762F"/>
+                    <g fill="rgba(255,255,255,.35)" font-size="5" font-family="Poppins, sans-serif">
+                      <text x="8" y="93">Jan</text><text x="62" y="93">Feb</text><text x="116" y="93">Mar</text><text x="170" y="93">Apr</text><text x="224" y="93">May</text><text x="278" y="93">Jun</text>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="laptop-base"></div>
+        </div>
 
-        <!-- Central logo orb — white bg, logo clearly visible -->
-        <div class="orb">
-          <img src="logo.png" onerror="this.style.display='none'; document.getElementById('orbFb').style.display='flex'">
-          <div id="orbFb" class="orb-fallback">
-            <svg viewBox="0 0 40 24" fill="none" width="70">
-              <path d="M20 12 C17 7,13 4,10 4 C5.58 4,2 7.58,2 12 C2 16.42,5.58 20,10 20 C13 20,17 17,20 12 Z" fill="#1A1A1A"/>
-              <path d="M20 12 C23 7,27 4,30 4 C34.42 4,38 7.58,38 12 C38 16.42,34.42 20,30 20 C27 20,23 17,20 12 Z" fill="#C75B12"/>
+        <!-- Code card -->
+        <div class="code-card">
+          <div class="code-head"><span class="tag">&lt;/&gt;</span><span class="dots"><i></i><i></i><i></i></span></div>
+          <div>class <span class="c-blue">Solution</span> {</div>
+          <div class="ind"><span class="c-blue">Future&lt;void&gt;</span> build() <span class="c-org">async</span> {</div>
+          <div class="ind"><div class="ind">return App();</div></div>
+          <div class="ind">}</div>
+          <div>}</div>
+        </div>
+
+        <!-- AI card -->
+        <div class="ai-card">
+          <h4>AI</h4>
+          <div class="ai-row">
+            <svg viewBox="0 0 64 64" fill="none" stroke="#E2762F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M31 14c-3-3-9-3-11 1-4 0-7 4-5 8-4 2-4 8 0 10-2 4 1 9 6 9 1 4 7 6 10 3z"/>
+              <path d="M33 14c3-3 9-3 11 1 4 0 7 4 5 8 4 2 4 8 0 10 2 4-1 9-6 9-1 4-7 6-10 3z"/>
+              <path d="M32 14v31"/>
+              <path d="M22 22c2 0 4 2 4 4M20 32h5c2 0 3 2 3 4M42 22c-2 0-4 2-4 4M44 32h-5c-2 0-3 2-3 4"/>
+              <path d="M24 8v4M32 6v6M40 8v4M24 50v4M32 50v6M40 50v4M6 26h5M6 34h5M53 26h5M53 34h5"/>
+              <circle cx="24" cy="7" r="1.2"/><circle cx="40" cy="7" r="1.2"/><circle cx="24" cy="55" r="1.2"/><circle cx="40" cy="55" r="1.2"/>
             </svg>
+            <p>Smarter insights.<br>Better decisions.</p>
           </div>
         </div>
 
-        <!-- 5 orbit nodes — positioned by JS, always upright -->
-          <!-- Node 1: Web -->
-          <div class="node">
-            <div class="node-pill">
-              <svg viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="9" stroke="#C75B12" stroke-width="1.6"/>
-                <path d="M12 3s-3 4-3 9 3 9 3 9M12 3s3 4 3 9-3 9-3 9M3 12h18" stroke="#C75B12" stroke-width="1.4"/>
-              </svg>
-            </div>
-            <div class="node-label">Web</div>
+        <!-- Phone -->
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="ph-status"><span>9:41</span><span>▪▪ ◔</span></div>
+          <div class="ph-head">
+            <div class="ph-brand"><i><img src="https://play-lh.googleusercontent.com/a3SbvXw1TB3NbhItXmftfaAO9F6EmzkNP-bH5hlR_eIUwiBAtL3zxOgJOdgHqoh1orPjWU6wdmGoeLPmLZdZ=w240-h480" alt="" onerror="this.remove()"></i>Shopkeeper</div>
+            <div class="ph-menu"></div>
           </div>
-
-          <!-- Node 2: Security -->
-          <div class="node">
-            <div class="node-pill">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M12 2l8 3.5v5.5c0 5.25-3.5 9.74-8 11-4.5-1.26-8-5.75-8-11V5.5L12 2z" stroke="#C75B12" stroke-width="1.6" stroke-linejoin="round"/>
-                <path d="M9 12l2 2 4-4" stroke="#C75B12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div class="node-label">Security</div>
+          <div class="ph-greet">Good morning,</div>
+          <div class="ph-name">John Doe</div>
+          <div class="ph-sales">
+            <div class="l">Total Sales</div>
+            <div class="v">ZMW 4,860</div>
+            <div class="d">↑ 12%</div>
+            <svg viewBox="0 0 14 12" fill="#FBB98A"><rect x="0" y="7" width="2.4" height="5" rx=".6"/><rect x="3.8" y="4" width="2.4" height="8" rx=".6"/><rect x="7.6" y="1" width="2.4" height="11" rx=".6"/><rect x="11.4" y="5" width="2.4" height="7" rx=".6"/></svg>
           </div>
-
-          <!-- Node 3: Mobile -->
-          <div class="node">
-            <div class="node-pill">
-              <svg viewBox="0 0 24 24" fill="none">
-                <rect x="7" y="2" width="10" height="20" rx="2" stroke="#C75B12" stroke-width="1.6"/>
-                <circle cx="12" cy="18" r="1" fill="#C75B12"/>
-                <path d="M10 5h4" stroke="#C75B12" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div class="node-label">Mobile</div>
+          <div class="ph-tiles">
+            <div class="ph-tile"><b style="background:rgba(74,222,128,.15)"><svg viewBox="0 0 10 10" fill="none" stroke="#4ADE80" stroke-width="1.1"><rect x="1.5" y="2.5" width="7" height="6" rx="1"/><path d="M3.5 2.5V1.5h3v1"/></svg></b>Inventory</div>
+            <div class="ph-tile"><b style="background:rgba(96,165,250,.15)"><svg viewBox="0 0 10 10" fill="none" stroke="#60A5FA" stroke-width="1.1"><rect x="1.5" y="1.5" width="7" height="7" rx="1"/><path d="M3.5 5h3"/></svg></b>Sales</div>
+            <div class="ph-tile"><b style="background:rgba(226,118,47,.18)"><svg viewBox="0 0 10 10" fill="none" stroke="#E2762F" stroke-width="1.1"><rect x="2" y="1.5" width="6" height="7" rx="1"/><path d="M4 4h2M4 6h2"/></svg></b>Expenses</div>
+            <div class="ph-tile"><b style="background:rgba(167,139,250,.18)"><svg viewBox="0 0 10 10" fill="none" stroke="#A78BFA" stroke-width="1.1"><rect x="2" y="1.5" width="6" height="7" rx="1"/><path d="M3.5 4.5h3M3.5 6.5h2"/></svg></b>Credit</div>
           </div>
-
-          <!-- Node 4: Cloud -->
-          <div class="node">
-            <div class="node-pill">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M6.5 19a4.5 4.5 0 01-.4-8.9 6.5 6.5 0 0112.6 1.4A4 4 0 0118 19H6.5z" stroke="#C75B12" stroke-width="1.6" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div class="node-label">Cloud</div>
+          <div class="ph-nav">
+            <div class="on"><i></i>Home</div>
+            <div><i></i>Inventory</div>
+            <div><i></i>Sales</div>
+            <div><i></i>More</div>
           </div>
+        </div>
 
-          <!-- Node 5: ERP -->
-          <div class="node">
-            <div class="node-pill">
-              <svg viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="3" width="18" height="18" rx="2" stroke="#C75B12" stroke-width="1.6"/>
-                <path d="M3 9h18M9 9v12" stroke="#C75B12" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div class="node-label">ERP</div>
-          </div>
+      </div>
+    </div>
 
-        </div><!-- /hero-visual -->
-
-    </div><!-- /hero-grid -->
-  </div><!-- /container -->
+  </div>
 </section>
 
 <!-- ── WHY CHOOSE US ── -->
@@ -481,7 +534,7 @@
     <div class="why-row1">
       <div class="why-card reveal reveal-delay-1">
         <div class="why-icon">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4v5c0 5.25-3.5 9.74-8 11-4.5-1.26-8-5.75-8-11V7l8-4z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4v5c0 5.25-3.5 9.740-8 11-4.5-1.26-8-5.75-8-11V7l8-4z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
         <h3>Secure Systems</h3>
         <p>Security-first architecture, encryption, and best practices built in from day one.</p>
@@ -555,12 +608,6 @@
           Morphiq Technologies
         </a>
         <p>Building intelligent digital solutions for businesses and everyday users around the world.</p>
-        <div class="social-links">
-          <a href="#" class="social-link" aria-label="Twitter"><svg viewBox="0 0 15 15" fill="none"><path d="M13.5 1.5l-5 5.5m0 0L2 1.5m6.5 5.5L2 13.5m6.5-6.5l5 6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a>
-          <a href="#" class="social-link" aria-label="LinkedIn"><svg viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 6v5M4 4v.5M7 11V8.5c0-1.5 4-1.5 4 0V11M7 6v5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
-          <a href="#" class="social-link" aria-label="GitHub"><svg viewBox="0 0 15 15" fill="none"><path d="M7.5 1C3.91 1 1 3.91 1 7.5c0 2.87 1.86 5.3 4.44 6.16.32.06.44-.14.44-.31v-1.09c-1.8.39-2.18-.87-2.18-.87-.3-.75-.72-.95-.72-.95-.59-.4.04-.39.04-.39.65.04 1 .67 1 .67.58 1 1.52.71 1.89.54.06-.42.23-.71.41-.87-1.44-.16-2.95-.72-2.95-3.2 0-.71.25-1.28.67-1.73-.07-.16-.29-.82.06-1.71 0 0 .55-.18 1.78.67.52-.14 1.07-.21 1.62-.21s1.1.07 1.62.21c1.24-.85 1.78-.67 1.78-.67.35.89.13 1.55.06 1.71.42.45.67 1.02.67 1.73 0 2.49-1.52 3.04-2.96 3.2.23.2.44.59.44 1.19v1.77c0 .17.12.37.44.31C12.14 12.8 14 10.37 14 7.5 14 3.91 11.09 1 7.5 1z" fill="currentColor"/></svg></a>
-          <a href="#" class="social-link" aria-label="Instagram"><svg viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="13" height="13" rx="3" stroke="currentColor" stroke-width="1.2"/><circle cx="7.5" cy="7.5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="4" r=".6" fill="currentColor"/></svg></a>
-        </div>
       </div>
       <div class="footer-col">
         <h4>Company</h4>
@@ -581,43 +628,51 @@
         </ul>
       </div>
       <div class="footer-col">
-        <h4>Legal</h4>
+        <h4>Get in Touch</h4>
         <ul>
-          <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Terms of Service</a></li>
-          <li><a href="#">Cookie Policy</a></li>
+          <li><a href="mailto:morphiqtechnologies@gmail.com">morphiqtechnologies@gmail.com</a></li>
+          <li><a href="https://wa.me/260777063437" target="_blank" rel="noopener">+260 777 063 437</a></li>
+          <li><a href="contact.html">Send a message</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2025 <span class="footer-accent">Morphiq Technologies</span>. All rights reserved.</p>
+      <p>© <span data-year>2026</span> <span class="footer-accent">Morphiq Technologies</span>. All rights reserved.</p>
       <p>Built with precision. Designed with purpose.</p>
     </div>
   </div>
 </footer>
 
 <script>
-  // Navbar scroll shadow
+  // Navbar: transparent/dark over the hero, white once past it
   const navbar = document.getElementById('navbar');
-  window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 20);
-  }, { passive: true });
+  const hero = document.querySelector('.hero');
+  let menuOpen = false;
+
+  function updateNav() {
+    const y = window.scrollY;
+    const overHero = !menuOpen && y < hero.offsetHeight - navbar.offsetHeight;
+    navbar.classList.toggle('on-hero', overHero);
+    navbar.classList.toggle('dim', overHero && y > 20);
+    navbar.classList.toggle('scrolled', !overHero && y > 20);
+  }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  window.addEventListener('resize', updateNav);
+  updateNav();
 
   // Hamburger menu
   const hamburger = document.getElementById('hamburger');
   const mobileNav = document.getElementById('mobileNav');
-  hamburger.addEventListener('click', () => {
-    const open = hamburger.classList.toggle('open');
+  function setMenu(open) {
+    menuOpen = open;
+    hamburger.classList.toggle('open', open);
     mobileNav.classList.toggle('open', open);
     hamburger.setAttribute('aria-expanded', open);
     document.body.style.overflow = open ? 'hidden' : '';
-  });
-  document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => {
-    hamburger.classList.remove('open');
-    mobileNav.classList.remove('open');
-    hamburger.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-  }));
+    updateNav();
+  }
+  hamburger.addEventListener('click', () => setMenu(!menuOpen));
+  document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => setMenu(false)));
 
   // Scroll reveal
   const observer = new IntersectionObserver(entries => {
@@ -626,63 +681,7 @@
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-  // ── ORBIT ANIMATION ──
-  // Pure translate — nodes never rotate, so icons and labels stay perfectly upright.
-  (function () {
-    const visual   = document.querySelector('.hero-visual');
-    const nodes    = Array.from(visual.querySelectorAll('.node'));
-    const COUNT    = nodes.length;      // 5
-    const RADIUS   = 160;               // px — orbit radius
-    const DURATION = 40000;             // ms for one full revolution
-
-    let startTime = null;
-    let animating = true;
-
-    // Ensure nodes start at top-left so translate is from (0,0)
-    nodes.forEach(n => { n.style.position = 'absolute'; n.style.top = '0'; n.style.left = '0'; });
-
-    // Wait one frame so the browser has laid out the nodes and we can read offsetWidth/Height
-    requestAnimationFrame(() => {
-      // Pre-measure node sizes once — they don't change
-      const sizes = nodes.map(n => ({ w: n.offsetWidth, h: n.offsetHeight }));
-
-      // Pause when scrolled away for performance
-      const heroObs = new IntersectionObserver(entries => {
-        animating = entries[0].isIntersecting;
-        if (animating) requestAnimationFrame(tick);
-      }, { threshold: 0 });
-      heroObs.observe(visual);
-
-      function tick(ts) {
-        if (!animating) return;
-        if (!startTime) startTime = ts;
-
-        const elapsed    = ts - startTime;
-        const orbitAngle = (elapsed / DURATION) * 2 * Math.PI;
-
-        // Centre of the visual container
-        const cx = visual.offsetWidth  / 2;
-        const cy = visual.offsetHeight / 2;
-
-        nodes.forEach((node, i) => {
-          const baseAngle = (i / COUNT) * 2 * Math.PI;
-          const angle     = orbitAngle + baseAngle - Math.PI / 2; // start at 12 o'clock
-
-          // Position on circle
-          const x = cx + RADIUS * Math.cos(angle) - sizes[i].w / 2;
-          const y = cy + RADIUS * Math.sin(angle) - sizes[i].h / 2;
-
-          // Only translate — zero rotation — nodes stay perfectly upright
-          node.style.transform = `translate(${x}px, ${y}px)`;
-        });
-
-        requestAnimationFrame(tick);
-      }
-
-      requestAnimationFrame(tick);
-    });
-  })();
 </script>
+<script src="site.js"></script>
 </body>
 </html>
