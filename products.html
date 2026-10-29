@@ -340,6 +340,8 @@
   }
   .modal-dl-btn:hover { background: var(--clr-accent); transform: translateY(-1px); }
   .modal-dl-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+  .modal-dl-btn.win { margin-top: 10px; background: #fff; color: var(--clr-text); border: 1.5px solid var(--clr-text); }
+  .modal-dl-btn.win:hover { background: var(--clr-text); color: #fff; }
   .modal-dl-note { text-align: center; font-size: 11.5px; color: var(--clr-text-muted); margin-top: 9px; }
 
   /* ── FOOTER ── */
@@ -535,7 +537,7 @@
   <div class="container">
     <div class="section-label">Our Products</div>
     <h1>Apps Built by<br>Morphiq Technologies</h1>
-    <p>Software we've designed, built, and shipped — get it on your Android device.</p>
+    <p>Software we've designed, built, and shipped — get it on Android or Windows.</p>
   </div>
 </div>
 
@@ -579,6 +581,10 @@
           <path d="M2 16h14" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
         <span class="dl-label">Download App</span>
+      </a>
+      <a class="modal-dl-btn win" id="modalWinBtn" href="#" download style="display:none;">
+        <svg viewBox="0 0 18 18" fill="currentColor"><path d="M1 3.2l6.6-.9v6.3H1zM8.4 2.2L17 1v7.6H8.4zM1 9.4h6.6v6.3L1 14.8zM8.4 9.4H17V17l-8.6-1.2z"/></svg>
+        <span>Download for Windows</span>
       </a>
       <div class="modal-dl-note" id="dlNote">Available for Android · Free to install</div>
     </div>
@@ -653,7 +659,7 @@
       version: "v1.2.0",
       size:    "62 MB",
       snippet: "Inventory, sales, expenses and credit tracking for small businesses.",
-      desc:    "Shopkeeper helps small business owners track sales, monitor inventory, and understand business growth — all from their Android device. Simple, fast, and built for everyday use.",
+      desc:    "Shopkeeper helps small business owners track sales, monitor inventory, and understand business growth — on Android phones or Windows computers. Simple, fast, and built for everyday use.",
       image:   "images/app-banner.png",
       icon:    "images/app-icon.png",
       storeUrl: "https://play.google.com/store/apps/details?id=com.Morphitech.shopkeeper"
@@ -662,6 +668,14 @@
 
   // Play Store links, matched by product id or title (so products.json
   // entries get the link even without a storeUrl field)
+  // ── WINDOWS INSTALLER ──
+  // Put the Shopkeeper setup .exe at this path on your site
+  // (or replace it with a full link, e.g. a GitHub Release download URL).
+  const WINDOWS_LINKS = {
+    "app-001":    "downloads/Shopkeeper-Setup.exe",
+    "shopkeeper": "downloads/Shopkeeper-Setup.exe"
+  };
+
   const STORE_LINKS = {
     "app-001":    "https://play.google.com/store/apps/details?id=com.Morphitech.shopkeeper",
     "shopkeeper": "https://play.google.com/store/apps/details?id=com.Morphitech.shopkeeper"
@@ -676,7 +690,8 @@
     return {
       ...p,
       storeUrl:  p.storeUrl  || STORE_LINKS[p.id] || STORE_LINKS[key] || '',
-      storeIcon: p.storeIcon || STORE_ICONS[p.id] || STORE_ICONS[key] || ''
+      storeIcon: p.storeIcon || STORE_ICONS[p.id] || STORE_ICONS[key] || '',
+      windowsUrl: p.windowsUrl || WINDOWS_LINKS[p.id] || WINDOWS_LINKS[key] || ''
     };
   }
 
@@ -816,6 +831,12 @@
       <svg viewBox="0 0 11 11" fill="none"><rect x="1.5" y="1" width="8" height="9" rx="1.2" stroke="currentColor" stroke-width="1.1"/><circle cx="5.5" cy="7.5" r=".7" fill="currentColor"/><path d="M3.5 3h4" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
       Android 6.0+
     </div>`;
+    if (p.windowsUrl) {
+      chips.innerHTML += `<div class="chip">
+        <svg viewBox="0 0 11 11" fill="currentColor"><path d="M.5 2l4-.55v3.85h-4zM5.3 1.35L10.5.6v4.7H5.3zM.5 5.9h4v3.85l-4-.55zM5.3 5.9h5.2v4.7l-5.2-.75z"/></svg>
+        Windows 10+
+      </div>`;
+    }
 
     // Download — APK URL placed on href, never shown visually
     const dl = document.getElementById('modalDlBtn');
@@ -829,6 +850,15 @@
       dl.setAttribute('download', '');
       dl.querySelector('.dl-label').textContent = 'Download App';
       document.getElementById('dlNote').textContent = 'Available for Android · Free to install';
+    }
+
+    const win = document.getElementById('modalWinBtn');
+    if (p.windowsUrl) {
+      win.href = p.windowsUrl;
+      win.style.display = 'flex';
+      document.getElementById('dlNote').textContent = (p.storeUrl ? 'Android on Google Play' : 'Android') + ' · Windows installer · Free to install';
+    } else {
+      win.style.display = 'none';
     }
 
     // Open
