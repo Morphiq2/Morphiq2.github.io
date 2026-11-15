@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Land Registry — Demonstration System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#1B4332;
+    --primary-dark:#122E22;
+    --primary-tint:#E4EDE7;
+    --accent:#C67C3E;
+    --accent-dark:#A5642E;
+    --bg:#F1F3EF;
+    --surface:#FFFFFF;
+    --ink:#1F2A24;
+    --ink-muted:#5B6B62;
+    --border:#DDE3DC;
+    --available:#2F9E44;
+    --pending:#E8A33D;
+    --sold:#1B4332;
+    --rejected:#C1443C;
+    --radius:10px;
+    --shadow:0 1px 2px rgba(31,42,36,0.06), 0 4px 14px rgba(31,42,36,0.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',-apple-system,Segoe UI,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif; margin:0; letter-spacing:-0.01em;}
+  p{margin:0;}
+  button{font-family:inherit; cursor:pointer;}
+  input,textarea,select{font-family:inherit;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  .code{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    letter-spacing:0.03em;
+    display:inline-block;
+    padding:3px 8px;
+    border:1px solid currentColor;
+    border-radius:4px;
+    font-size:12.5px;
+  }
+  .code.lg{font-size:14px; padding:4px 10px;}
+
+  .pill{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:12.5px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;
+    padding:4px 10px; border-radius:999px;
+  }
+  .pill::before{content:''; width:7px; height:7px; border-radius:50%; background:currentColor;}
+  .pill.available{color:var(--available); background:rgba(47,158,68,0.1);}
+  .pill.pending{color:var(--pending); background:rgba(232,163,61,0.14);}
+  .pill.sold{color:var(--sold); background:rgba(27,67,50,0.1);}
+  .pill.rejected{color:var(--rejected); background:rgba(193,68,60,0.1);}
+
+  .login-page{
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+    background-color:var(--bg);
+    background-image: linear-gradient(rgba(27,67,50,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(27,67,50,0.05) 1px, transparent 1px);
+    background-size:34px 34px;
+  }
+  .login-card{width:100%; max-width:380px;}
+  .login-logo{display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:26px;}
+  .login-logo .mark{
+    width:40px; height:40px; border-radius:9px; background:var(--primary); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:14px; letter-spacing:0.02em;
+  }
+  .login-logo .word{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:17px; color:var(--ink);}
+  .login-panel{
+    background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:30px 26px;
+    box-shadow:0 10px 34px rgba(31,42,36,0.09), 0 2px 8px rgba(31,42,36,0.05);
+  }
+  .login-panel h2{font-size:19px; margin-bottom:4px;}
+  .login-panel .sub{font-size:13px; color:var(--ink-muted); margin-bottom:22px;}
+  .login-hint{
+    margin-top:18px; padding:12px 14px; background:var(--primary-tint); border-radius:8px;
+    font-size:12.5px; color:var(--primary-dark); line-height:1.55;
+  }
+  .login-hint strong{font-family:'IBM Plex Mono',monospace;}
+  .reset-row{text-align:center; margin-top:24px; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;}
+  .text-link{
+    background:none; border:none; color:var(--ink-muted); font-size:13px; text-decoration:underline;
+    text-underline-offset:3px; cursor:pointer; font-family:inherit; padding:0;
+  }
+  .disclaimer{
+    text-align:center; font-size:12px; color:var(--ink-muted); max-width:520px; margin:14px auto 0; line-height:1.5;
+  }
+
+  .shell{display:grid; grid-template-columns:220px 1fr; min-height:100vh;}
+  .shell.with-dock{grid-template-columns:220px 1fr 400px;}
+  @media (max-width:1300px){
+    .shell.with-dock{grid-template-columns:220px 1fr; grid-template-areas:"sidebar main" "dock dock";}
+    .shell.with-dock .sidebar{grid-area:sidebar;}
+    .shell.with-dock .main{grid-area:main;}
+    .shell.with-dock .right-dock{grid-area:dock; margin:0 24px 24px;}
+  }
+  .right-dock{
+    margin:24px 24px 24px 0; padding:20px; align-self:start;
+    border:1px solid var(--border); border-radius:var(--radius); background:var(--surface);
+    box-shadow:var(--shadow); overflow-x:auto;
+  }
+  .right-dock .panel-head{margin-bottom:12px;}
+  .sidebar{background:var(--primary); color:#fff; padding:22px 18px; display:flex; flex-direction:column;}
+  .sidebar .brand{font-size:13px; font-weight:600; letter-spacing:0.04em; opacity:0.7; margin-bottom:28px;}
+  .sidebar .dept-title{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
+  .sidebar .dept-title h2{font-size:18px; color:#fff;}
+  .sidebar .role-note{font-size:12.5px; color:rgba(255,255,255,0.65); line-height:1.5; margin-bottom:28px;}
+  .sidebar nav{display:flex; flex-direction:column; gap:4px; flex:1;}
+  .sidebar nav .item{
+    padding:9px 10px; border-radius:7px; font-size:14px; font-weight:500;
+    background:rgba(255,255,255,0.1);
+  }
+  .sidebar .switch-btn{
+    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#fff;
+    padding:10px 12px; border-radius:8px; font-size:13px; font-weight:500; margin-top:auto;
+    transition:background .15s ease;
+  }
+  .sidebar .switch-btn:hover{background:rgba(255,255,255,0.16);}
+
+  .main{padding:26px 30px 60px; max-width:1180px;}
+  .topbar{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap; gap:8px;}
+  .topbar h1{font-size:23px;}
+  .topbar .timestamp{font-size:12.5px; color:var(--ink-muted); font-family:'IBM Plex Mono',monospace;}
+
+  .stats-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px; margin-bottom:26px;}
+  .stat-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:16px 18px; box-shadow:var(--shadow);
+  }
+  .stat-card .n{font-family:'Space Grotesk',sans-serif; font-size:26px; font-weight:600;}
+  .stat-card .l{font-size:12.5px; color:var(--ink-muted); margin-top:2px;}
+
+  .panel{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:20px; margin-bottom:22px;
+  }
+  .panel-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:8px;}
+  .panel-head h2{font-size:16px;}
+  .panel-head .hint{font-size:12.5px; color:var(--ink-muted);}
+
+  .layout-2col{display:grid; grid-template-columns:1.5fr 1fr; gap:22px; align-items:start;}
+  @media (max-width:960px){ .layout-2col{grid-template-columns:1fr;} }
+  .layout-map{display:grid; grid-template-columns:2.4fr 1fr; gap:22px; align-items:start;}
+  @media (max-width:1000px){ .layout-map{grid-template-columns:1fr;} }
+
+  .map-canvas{
+    position:relative; width:100%; aspect-ratio:700/460; border-radius:8px; overflow:hidden;
+    border:1px solid var(--border); cursor:crosshair; user-select:none;
+  }
+  .map-canvas.readonly{cursor:default;}
+  .map-canvas svg{width:100%; height:100%; display:block;}
+  #plotsLayer{position:absolute; inset:0; pointer-events:none;}
+  .plot-shape{
+    position:absolute; border:2px solid #fff; border-radius:3px; cursor:pointer; pointer-events:auto;
+    box-shadow:0 1px 3px rgba(0,0,0,0.35); transition:filter .12s ease;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+    font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:600; color:#fff; letter-spacing:0.02em;
+    text-shadow:0 1px 1px rgba(0,0,0,0.4);
+  }
+  .plot-shape:hover{filter:brightness(1.15);}
+  .plot-shape.available{background:rgba(47,158,68,0.78);}
+  .plot-shape.pending{background:rgba(232,163,61,0.82);}
+  .plot-shape.sold{background:rgba(27,67,50,0.82);}
+  .plot-shape.temp{background:rgba(154,166,158,0.35); border-style:dashed; border-color:#9AA69E; pointer-events:none; box-shadow:none;}
+  .map-legend{
+    position:absolute; right:10px; bottom:10px; background:rgba(255,255,255,0.92); border:1px solid var(--border);
+    border-radius:7px; padding:8px 10px; pointer-events:none; box-shadow:var(--shadow);
+  }
+  .map-legend .row{display:flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-muted); margin:2px 0;}
+  .map-legend .dot{width:8px; height:8px; border-radius:2px; flex-shrink:0;}
+
+  .form-field{margin-bottom:14px;}
+  .form-field label{display:block; font-size:12.5px; font-weight:600; color:var(--ink-muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:0.03em;}
+  .form-field input, .form-field textarea, .form-field select{
+    width:100%; padding:9px 11px; border:1px solid var(--border); border-radius:7px; font-size:14px; color:var(--ink);
+    background:#fcfcfb;
+  }
+  .form-field input:focus, .form-field textarea:focus, .form-field select:focus{border-color:var(--accent);}
+  .form-field input[readonly]{background:var(--primary-tint); color:var(--primary-dark); font-family:'IBM Plex Mono',monospace; font-weight:600;}
+  .filter-select{
+    padding:6px 10px; border:1px solid var(--border); border-radius:7px; font-size:12.5px;
+    background:#fcfcfb; color:var(--ink);
+  }
+  .form-row-2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    padding:9px 16px; border-radius:7px; font-size:13.5px; font-weight:600; border:none;
+    transition:filter .15s ease, transform .1s ease;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--primary); color:#fff;}
+  .btn-primary:hover{filter:brightness(1.12);}
+  .btn-accent{background:var(--accent); color:#fff;}
+  .btn-accent:hover{filter:brightness(1.08);}
+  .btn-ghost{background:transparent; color:var(--ink-muted); border:1px solid var(--border);}
+  .btn-ghost:hover{background:var(--bg);}
+  .btn-approve{background:rgba(47,158,68,0.12); color:var(--available);}
+  .btn-approve:hover{background:rgba(47,158,68,0.2);}
+  .btn-reject{background:rgba(193,68,60,0.1); color:var(--rejected);}
+  .btn-reject:hover{background:rgba(193,68,60,0.18);}
+  .btn-block{background:rgba(31,42,36,0.08); color:var(--ink);}
+  .btn-block:hover{background:rgba(31,42,36,0.15);}
+  .btn-row{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;}
+  .btn-sm{padding:6px 12px; font-size:12.5px;}
+  .btn-full{width:100%; justify-content:center;}
+
+  .empty-note{
+    border:1px dashed var(--border); border-radius:8px; padding:20px; text-align:center;
+    color:var(--ink-muted); font-size:13.5px;
+  }
+  .field-hint{font-size:12px; color:var(--ink-muted); margin-top:10px;}
+
+  table{width:100%; border-collapse:collapse;}
+  th{
+    text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-muted);
+    padding:8px 10px; border-bottom:1px solid var(--border);
+  }
+  td{padding:11px 10px; font-size:13.5px; border-bottom:1px solid var(--border); vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+
+  .plot-list-item{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:11px 4px; border-bottom:1px solid var(--border);
+  }
+  .plot-list-item:last-child{border-bottom:none;}
+  .plot-list-item .meta{font-size:12.5px; color:var(--ink-muted); margin-top:3px;}
+
+  .plot-card{
+    border:1px solid var(--border); border-radius:9px; padding:16px; display:flex; flex-direction:column; gap:10px;
+    background:#fcfcfb;
+  }
+  .plot-card-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px;}
+  .plot-card .row{display:flex; justify-content:space-between; align-items:center;}
+  .plot-card .location{font-size:13.5px; font-weight:600;}
+  .plot-card .size{font-size:12.5px; color:var(--ink-muted);}
+
+  .log-item{display:flex; gap:12px; padding:10px 0; border-bottom:1px solid var(--border);}
+  .log-item:last-child{border-bottom:none;}
+  .log-item .log-ts{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-muted); width:120px; flex-shrink:0; padding-top:2px;}
+  .log-item .log-body .action{font-size:13.5px; font-weight:600;}
+  .log-item .log-body .detail{font-size:12.5px; color:var(--ink-muted); margin-top:2px;}
+
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(18,46,34,0.45); display:flex; align-items:center; justify-content:center;
+    padding:20px; z-index:1000;
+  }
+  .modal-box{
+    background:var(--surface); border-radius:12px; padding:26px; width:100%; max-width:420px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.25);
+  }
+  .modal-box h2{font-size:17px; margin-bottom:4px;}
+  .modal-box .sub{font-size:13px; color:var(--ink-muted); margin-bottom:18px;}
+
+  .login-error{color:var(--rejected); font-size:13px; margin-bottom:14px;}
+
+  @media (max-width:820px){
+    .shell{grid-template-columns:1fr;}
+    .sidebar{flex-direction:row; align-items:center; padding:14px 18px; gap:14px;}
+    .sidebar .brand, .sidebar .role-note{display:none;}
+    .sidebar nav{display:none;}
+    .sidebar .switch-btn{margin-top:0; margin-left:auto;}
+    .main{padding:20px 16px 40px;}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modalRoot"></div>
+
+<script>
+const MAP_EXTENT_E = 1000;
+const MAP_EXTENT_N = 650;
+const LAND_RATE_PER_SQM = 850;
+
+const DEFAULT_ADMIN = { id:'sys-admin', username:'admin@IT', password:'admin', role:'it', fullName:'System Administrator', nrc:'—', status:'active', system:true, createdAt:new Date().toISOString() };
+
+const state = { plots: [], applications: [], activityLog: [], users: [ DEFAULT_ADMIN ] };
+let currentUser = null;
+let currentView = 'login';
+
+const DEPT_META = {
+  lands:   { label:'Planning', code:'PL', color:'#1B4332', desc:'Cut out and register new plots on the map.' },
+  legal:   { label:'Legal',    code:'LG', color:'#8A5A2B', desc:'View available plots and apply to sell to a buyer.' },
+  finance: { label:'Finance',  code:'FN', color:'#22577A', desc:'Approve or reject pending sale applications.' },
+  it:      { label:'IT',       code:'IT', color:'#5C4A72', desc:'Manage user accounts and monitor the system.' },
+  auditor: { label:'Auditor',  code:'AU', color:'#4B5563', desc:'View system activity without making changes.' }
+};
+
+function resetDemoData(){
+  if(!confirm('Clear all plots, applications, log entries and users (except the default admin), and start blank again?')) return;
+  state.plots = [];
+  state.applications = [];
+  state.activityLog = [];
+  state.users = [ DEFAULT_ADMIN ];
+  currentUser = null;
+  navigateTo('login');
+}
+function exportData(){
+  const payload = {
+    exportedAt: new Date().toISOString(),
+    plots: state.plots,
+    applications: state.applications,
+    activityLog: state.activityLog,
+    users: state.users
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'land-registry-data.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function importData(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      if(!Array.isArray(data.plots) || !Array.isArray(data.applications) || !Array.isArray(data.users)){
+        throw new Error('Invalid file structure');
+      }
+      state.plots = data.plots;
+      state.applications = data.applications;
+      state.activityLog = Array.isArray(data.activityLog) ? data.activityLog : [];
+      state.users = data.users.length ? data.users : [ DEFAULT_ADMIN ];
+      currentUser = null;
+      userFilterRole = 'all';
+      navigateTo('login');
+      alert('Data imported successfully.');
+    } catch(err){
+      alert("That file doesn't look like a valid Land Registry export.");
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function fmtK(n){ return 'K ' + Number(n||0).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function fmtDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) + ' · ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+function fmtLogTs(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+function genPlotNumber(){ return 'PLT-' + String(state.plots.length + 1).padStart(6,'0'); }
+function genAppNumber(){ return 'APP-' + String(state.applications.length + 1).padStart(6,'0'); }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function pill(status){ return `<span class="pill ${status}">${status.charAt(0).toUpperCase()+status.slice(1)}</span>`; }
+function statusColor(status){ return {available:'#2F9E44', pending:'#E8A33D', sold:'#1B4332', rejected:'#C1443C'}[status] || '#888'; }
+function log(dept, action, detail){
+  state.activityLog.unshift({ ts:new Date().toISOString(), dept, action, detail });
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML = ''; }
+function openModal(html){ document.getElementById('modalRoot').innerHTML = `<div class="modal-overlay" onclick="if(event.target===this) closeModal()"><div class="modal-box">${html}</div></div>`; }
+
+function navigateTo(view){
+  currentView = view;
+  if(view === 'login') renderLogin();
+  else if(view === 'lands') renderLands();
+  else if(view === 'legal') renderLegal();
+  else if(view === 'finance') renderFinance();
+  else if(view === 'it') renderIT();
+  else if(view === 'auditor') renderAuditor();
+}
+function logout(){
+  currentUser = null;
+  userFilterRole = 'all';
+  navigateTo('login');
+}
+
+function shell(contentHtml, dockHtml){
+  const meta = DEPT_META[currentUser.role];
+  const hasDock = !!dockHtml;
+  document.getElementById('app').innerHTML = `
+    <div class="shell ${hasDock ? 'with-dock' : ''}">
+      <aside class="sidebar" style="background:${meta.color}">
+        <div class="brand">LAND REGISTRY · DEMO</div>
+        <div class="dept-title">
+          <span class="code lg" style="color:#fff; border-color:rgba(255,255,255,0.5)">${meta.code}</span>
+          <h2>${meta.label}</h2>
+        </div>
+        <p class="role-note">Logged in as <strong>${currentUser.username}</strong></p>
+        <nav><div class="item">Dashboard</div></nav>
+        <button class="switch-btn" onclick="logout()">Log out</button>
+      </aside>
+      <main class="main">${contentHtml}</main>
+      ${hasDock ? `<aside class="right-dock">${dockHtml}</aside>` : ''}
+    </div>`;
+}
+
+function renderLogin(error){
+  document.getElementById('app').innerHTML = `
+    <div class="login-page">
+      <div class="login-card">
+        <div class="login-logo">
+          <div class="mark">LR</div>
+          <div class="word">Land Registry</div>
+        </div>
+        <div class="login-panel">
+          <h2>Sign in</h2>
+          <p class="sub">Access your department dashboard</p>
+          ${error ? `<p class="login-error">${error}</p>` : ''}
+          <div class="form-field"><label>Username</label><input id="loginUsername" type="text" placeholder="e.g. 482@PLANNING" autocomplete="username" onkeydown="if(event.key==='Enter') handleLogin()"></div>
+          <div class="form-field"><label>Password</label><input id="loginPassword" type="password" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter') handleLogin()"></div>
+          <button class="btn btn-primary btn-full" onclick="handleLogin()">Log in</button>
+        </div>
+        <div class="login-hint">First time here? Sign in with the default IT account — <strong>admin@IT</strong> / <strong>admin</strong> — to start creating other users.</div>
+        <div class="reset-row">
+          <button class="text-link" onclick="exportData()">Export data (.json)</button>
+          <label class="text-link" style="cursor:pointer;">Import data (.json)<input type="file" accept="application/json" style="display:none;" onchange="importData(event)"></label>
+          <button class="text-link" onclick="resetDemoData()">Reset demo data</button>
+        </div>
+        <p class="disclaimer">Demonstration system — data persists in this browser tab, or can be saved to and loaded from a JSON file.</p>
+      </div>
+    </div>`;
+}
+function handleLogin(){
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const user = state.users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+  if(!user){ renderLogin('Incorrect username or password.'); return; }
+  if(user.status === 'suspended'){ renderLogin('This account has been suspended. Contact IT.'); return; }
+  if(user.status === 'blocked'){ renderLogin('This account has been blocked. Contact IT.'); return; }
+  currentUser = user;
+  navigateTo(user.role);
+}
+
+function pointToCoords(xPct, yPct){
+  return {
+    easting: Math.round((xPct / 100) * MAP_EXTENT_E),
+    northing: Math.round((1 - yPct / 100) * MAP_EXTENT_N)
+  };
+}
+function coordsToPoint(easting, northing){
+  return {
+    x: Math.min(98, Math.max(2, (easting / MAP_EXTENT_E) * 100)),
+    y: Math.min(98, Math.max(2, (1 - northing / MAP_EXTENT_N) * 100))
+  };
+}
+function blockForPoint(x, y){
+  const onRoad = (x > 45 && x < 51) || (y > 46 && y < 54);
+  if(onRoad) return 'Fronting the main road';
+  if(x < 45 && y < 46) return 'Block A';
+  if(x > 51 && y < 46) return 'Block B';
+  if(x < 45 && y > 54) return 'Block C';
+  return 'Block D';
+}
+
+function landsStatsHtml(){
+  const total = state.plots.length;
+  const available = state.plots.filter(p=>p.status==='available').length;
+  const pending = state.plots.filter(p=>p.status==='pending').length;
+  const sold = state.plots.filter(p=>p.status==='sold').length;
+  return `
+    <div class="stat-card"><div class="n">${total}</div><div class="l">Total plots</div></div>
+    <div class="stat-card"><div class="n" style="color:var(--available)">${available}</div><div class="l">Available</div></div>
+    <div class="stat-card"><div class="n" style="color:var(--pending)">${pending}</div><div class="l">Pending sale</div></div>
+    <div class="stat-card"><div class="n" style="color:var(--sold)">${sold}</div><div class="l">Sold</div></div>`;
+}
+function landsListHtml(){
+  if(state.plots.length === 0) return `<div class="empty-note">No plots yet. Enter coordinates or click the map to cut out the first one.</div>`;
+  const sorted = [...state.plots].sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt));
+  return sorted.map(p => `
+    <div class="plot-list-item">
+      <div>
+        <span class="code" style="color:var(--primary)">${p.plotNumber}</span>
+        <div class="meta">${p.location} · E${p.easting}m N${p.northing}m · ${p.sizeSqm} sqm · ${fmtK(p.value)}</div>
+      </div>
+      ${pill(p.status)}
+    </div>`).join('');
+}
+function openPlotModal(id){
+  const p = state.plots.find(x => x.id === id);
+  if(!p) return;
+  openModal(`
+    <div class="code lg" style="color:${statusColor(p.status)}; border-color:${statusColor(p.status)}; margin-bottom:12px;">${p.plotNumber}</div>
+    <h2>${p.location}</h2>
+    <p class="sub">${p.sizeSqm} sqm · ${fmtK(p.value)} · E${p.easting}m N${p.northing}m · cut out ${fmtDate(p.createdAt)}</p>
+    <div style="margin-bottom:18px;">${pill(p.status)}</div>
+    <div class="btn-row"><button class="btn btn-ghost" onclick="closeModal()">Close</button></div>
+  `);
+}
+
+const MAP_SVG = `
+<svg viewBox="0 0 700 460" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="surveyGrid" width="35" height="35" patternUnits="userSpaceOnUse">
+      <path d="M35 0 L0 0 0 35" fill="none" stroke="#C9D2C3" stroke-width="0.6"/>
+    </pattern>
+  </defs>
+  <rect width="700" height="460" fill="#E9EBDD"/>
+  <rect width="700" height="460" fill="url(#surveyGrid)"/>
+  <path d="M0,55 C55,90 35,145 88,188 C138,228 108,300 68,338 C40,364 18,398 0,418 Z" fill="#BBD6DE" opacity="0.85"/>
+  <path d="M0,55 C55,90 35,145 88,188 C138,228 108,300 68,338 C40,364 18,398 0,418" fill="none" stroke="#9CC1CC" stroke-width="2"/>
+  <ellipse cx="592" cy="92" rx="82" ry="56" fill="#B9CFA0" opacity="0.9"/>
+  <text x="592" y="96" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5C6B4A" text-anchor="middle" font-style="italic">Freedom Park</text>
+  <g fill="#B9B4A8">
+    <rect x="38" y="258" width="26" height="20"/>
+    <rect x="70" y="253" width="22" height="26"/>
+    <rect x="38" y="290" width="20" height="18"/>
+    <rect x="64" y="284" width="30" height="20"/>
+  </g>
+  <text x="30" y="328" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#8A8578" font-style="italic">Existing township</text>
+  <rect x="0" y="222" width="700" height="18" fill="#C7C4BC"/>
+  <rect x="331" y="0" width="18" height="460" fill="#C7C4BC"/>
+  <line x1="0" y1="231" x2="700" y2="231" stroke="#fff" stroke-width="2" stroke-dasharray="10 8"/>
+  <line x1="340" y1="0" x2="340" y2="460" stroke="#fff" stroke-width="2" stroke-dasharray="10 8"/>
+  <text x="352" y="16" font-family="IBM Plex Mono, monospace" font-size="10" fill="#7C7C74">UNITY AVE</text>
+  <text x="522" y="245" font-family="IBM Plex Mono, monospace" font-size="10" fill="#7C7C74">FREEDOM RD</text>
+  <text x="150" y="55" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#5B6B62" font-style="italic" opacity="0.65">Block A</text>
+  <text x="470" y="55" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#5B6B62" font-style="italic" opacity="0.65">Block B</text>
+  <text x="150" y="415" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#5B6B62" font-style="italic" opacity="0.65">Block C</text>
+  <text x="470" y="415" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#5B6B62" font-style="italic" opacity="0.65">Block D</text>
+  <g transform="translate(648,38)">
+    <circle r="22" fill="#fff" stroke="#C7C4BC" stroke-width="1.5"/>
+    <path d="M0,-15 L5,0 L0,15 L-5,0 Z" fill="#1B4332"/>
+    <text y="-27" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B6B62">N</text>
+  </g>
+  <g transform="translate(24,436)">
+    <line x1="0" y1="0" x2="70" y2="0" stroke="#5B6B62" stroke-width="2"/>
+    <line x1="0" y1="-4" x2="0" y2="4" stroke="#5B6B62" stroke-width="2"/>
+    <line x1="70" y1="-4" x2="70" y2="4" stroke="#5B6B62" stroke-width="2"/>
+    <text x="35" y="-8" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" fill="#5B6B62">approx. 200m</text>
+  </g>
+</svg>`;
+
+function newPlotFormHtml(){
+  return `
+    <div class="form-row-2">
+      <div class="form-field"><label>Easting (m)</label><input id="coordEasting" type="number" min="0" max="${MAP_EXTENT_E}" placeholder="e.g. 420" oninput="updatePlotPreview()"></div>
+      <div class="form-field"><label>Northing (m)</label><input id="coordNorthing" type="number" min="0" max="${MAP_EXTENT_N}" placeholder="e.g. 180" oninput="updatePlotPreview()"></div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-field"><label>Plot size (sqm)</label><input id="plotSize" type="text" placeholder="Highlight the map" readonly></div>
+      <div class="form-field"><label>Estimated value</label><input id="plotValue" type="text" placeholder="Highlight the map" readonly></div>
+    </div>
+    <div class="form-field"><label>Location / description</label><input id="plotLocation" type="text" placeholder="e.g. Block A"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="confirmNewPlot()">Cut out plot</button>
+      <button class="btn btn-ghost" onclick="clearNewPlotForm()">Clear</button>
+    </div>
+    <p class="field-hint">Drag on the map to highlight the plot's boundary — size and estimated value are calculated automatically at K${LAND_RATE_PER_SQM}/sqm.</p>
+  `;
+}
+
+function renderLands(){
+  shell(`
+    <div class="topbar"><h1>Planning Dashboard</h1><span class="timestamp">${fmtDate(new Date().toISOString())}</span></div>
+    <div class="stats-row" id="landsStats">${landsStatsHtml()}</div>
+    <div class="layout-map">
+      <div class="panel">
+        <div class="panel-head"><h2>Plot map</h2><span class="hint">Drag on the map to highlight a plot boundary</span></div>
+        <div class="map-canvas" id="mapCanvas">
+          ${MAP_SVG}
+          <div id="plotsLayer"></div>
+          <div class="map-legend">
+            <div class="row"><span class="dot" style="background:var(--available)"></span>Available</div>
+            <div class="row"><span class="dot" style="background:var(--pending)"></span>Pending</div>
+            <div class="row"><span class="dot" style="background:var(--sold)"></span>Sold</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="panel">
+          <div class="panel-head"><h2>New plot</h2></div>
+          <div id="newPlotPanel">${newPlotFormHtml()}</div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>All plots</h2></div>
+          <div id="landsList">${landsListHtml()}</div>
+        </div>
+      </div>
+    </div>
+  `);
+  initLandsCanvas();
+}
+let dragState = null;
+let pendingRect = null;
+const HIGHLIGHT_HALF = 2.2;
+function clampPct(v){ return Math.min(98, Math.max(2, v)); }
+function getRelativePoint(e, canvasEl){
+  const rect = canvasEl.getBoundingClientRect();
+  return {
+    x: clampPct(((e.clientX - rect.left) / rect.width) * 100),
+    y: clampPct(((e.clientY - rect.top) / rect.height) * 100)
+  };
+}
+function initLandsCanvas(){
+  const canvas = document.getElementById('mapCanvas');
+  canvas.addEventListener('mousedown', onMapMouseDown);
+  canvas.addEventListener('mousemove', onMapMouseMove);
+  canvas.addEventListener('mouseup', onMapMouseUp);
+  canvas.addEventListener('mouseleave', onMapMouseUp);
+  renderPlotShapesOnMap();
+}
+function renderPlotShapesOnMap(){
+  const layer = document.getElementById('plotsLayer');
+  if(!layer) return;
+  layer.innerHTML = state.plots.map(p => `
+    <div class="plot-shape ${p.status}" style="left:${p.x1}%; top:${p.y1}%; width:${p.x2 - p.x1}%; height:${p.y2 - p.y1}%;" title="${p.plotNumber}" onclick="event.stopPropagation(); openPlotModal('${p.id}')">${p.plotNumber.replace('PLT-','')}</div>
+  `).join('');
+}
+function showTempShape(x1, y1, x2, y2){
+  removeTempShape();
+  const layer = document.getElementById('plotsLayer');
+  if(!layer) return;
+  const div = document.createElement('div');
+  div.id = 'tempShape';
+  div.className = 'plot-shape temp';
+  div.style.left = x1 + '%';
+  div.style.top = y1 + '%';
+  div.style.width = (x2 - x1) + '%';
+  div.style.height = (y2 - y1) + '%';
+  layer.appendChild(div);
+}
+function removeTempShape(){
+  const el = document.getElementById('tempShape');
+  if(el) el.remove();
+}
+function fillFormFromRect(rect){
+  const cx = (rect.x1 + rect.x2) / 2, cy = (rect.y1 + rect.y2) / 2;
+  const { easting, northing } = pointToCoords(cx, cy);
+  document.getElementById('coordEasting').value = easting;
+  document.getElementById('coordNorthing').value = northing;
+  const locationField = document.getElementById('plotLocation');
+  if(!locationField.value) locationField.value = blockForPoint(cx, cy);
+}
+function rectSizeSqm(rect){
+  const widthM = ((rect.x2 - rect.x1) / 100) * MAP_EXTENT_E;
+  const heightM = ((rect.y2 - rect.y1) / 100) * MAP_EXTENT_N;
+  return Math.max(1, Math.round(widthM * heightM));
+}
+function refreshSizeAndValue(){
+  const sizeEl = document.getElementById('plotSize');
+  const valueEl = document.getElementById('plotValue');
+  if(!pendingRect){ sizeEl.value = ''; valueEl.value = ''; return; }
+  const size = rectSizeSqm(pendingRect);
+  sizeEl.value = `${size} sqm`;
+  valueEl.value = fmtK(size * LAND_RATE_PER_SQM);
+}
+function onMapMouseDown(e){
+  if(e.target.closest('.plot-shape')) return;
+  const p = getRelativePoint(e, e.currentTarget);
+  dragState = { startX:p.x, startY:p.y, curX:p.x, curY:p.y };
+  showTempShape(p.x - HIGHLIGHT_HALF, p.y - HIGHLIGHT_HALF, p.x + HIGHLIGHT_HALF, p.y + HIGHLIGHT_HALF);
+}
+function onMapMouseMove(e){
+  if(!dragState) return;
+  const p = getRelativePoint(e, e.currentTarget);
+  dragState.curX = p.x;
+  dragState.curY = p.y;
+  showTempShape(
+    Math.min(dragState.startX, dragState.curX), Math.min(dragState.startY, dragState.curY),
+    Math.max(dragState.startX, dragState.curX), Math.max(dragState.startY, dragState.curY)
+  );
+}
+function onMapMouseUp(){
+  if(!dragState) return;
+  const { startX, startY, curX, curY } = dragState;
+  const dx = Math.abs(curX - startX), dy = Math.abs(curY - startY);
+  let x1, y1, x2, y2;
+  if(dx < 1.5 && dy < 1.5){
+    x1 = clampPct(startX - HIGHLIGHT_HALF); x2 = clampPct(startX + HIGHLIGHT_HALF);
+    y1 = clampPct(startY - HIGHLIGHT_HALF); y2 = clampPct(startY + HIGHLIGHT_HALF);
+  } else {
+    x1 = clampPct(Math.min(startX, curX)); x2 = clampPct(Math.max(startX, curX));
+    y1 = clampPct(Math.min(startY, curY)); y2 = clampPct(Math.max(startY, curY));
+  }
+  pendingRect = { x1, y1, x2, y2 };
+  dragState = null;
+  showTempShape(x1, y1, x2, y2);
+  fillFormFromRect(pendingRect);
+  refreshSizeAndValue();
+}
+function updatePlotPreview(){
+  const easting = parseFloat(document.getElementById('coordEasting').value);
+  const northing = parseFloat(document.getElementById('coordNorthing').value);
+  if(isNaN(easting) || isNaN(northing)){ removeTempShape(); pendingRect = null; refreshSizeAndValue(); return; }
+  const { x, y } = coordsToPoint(easting, northing);
+  const x1 = clampPct(x - HIGHLIGHT_HALF), x2 = clampPct(x + HIGHLIGHT_HALF);
+  const y1 = clampPct(y - HIGHLIGHT_HALF), y2 = clampPct(y + HIGHLIGHT_HALF);
+  pendingRect = { x1, y1, x2, y2 };
+  showTempShape(x1, y1, x2, y2);
+  refreshSizeAndValue();
+}
+function clearNewPlotForm(){
+  document.getElementById('coordEasting').value = '';
+  document.getElementById('coordNorthing').value = '';
+  document.getElementById('plotSize').value = '';
+  document.getElementById('plotValue').value = '';
+  document.getElementById('plotLocation').value = '';
+  pendingRect = null;
+  removeTempShape();
+}
+function confirmNewPlot(){
+  const easting = parseFloat(document.getElementById('coordEasting').value);
+  const northing = parseFloat(document.getElementById('coordNorthing').value);
+  const location = document.getElementById('plotLocation').value.trim();
+  if(isNaN(easting) || easting < 0 || easting > MAP_EXTENT_E){ alert(`Easting must be between 0 and ${MAP_EXTENT_E} metres.`); return; }
+  if(isNaN(northing) || northing < 0 || northing > MAP_EXTENT_N){ alert(`Northing must be between 0 and ${MAP_EXTENT_N} metres.`); return; }
+  if(!location){ alert('Enter a location or description for this plot.'); return; }
+  if(!pendingRect){ alert('Drag on the map to highlight this plot\'s boundary.'); return; }
+  const size = rectSizeSqm(pendingRect);
+  const value = size * LAND_RATE_PER_SQM;
+  const plot = {
+    id: uid(), plotNumber: genPlotNumber(), easting, northing,
+    x1: pendingRect.x1, y1: pendingRect.y1, x2: pendingRect.x2, y2: pendingRect.y2,
+    sizeSqm: size, value, location, status:'available', createdAt: new Date().toISOString()
+  };
+  state.plots.push(plot);
+  log('Planning', 'Plot created', `${plot.plotNumber} · E${easting}m N${northing}m · ${size} sqm · ${fmtK(value)} · ${location}`);
+  clearNewPlotForm();
+  document.getElementById('landsStats').innerHTML = landsStatsHtml();
+  document.getElementById('landsList').innerHTML = landsListHtml();
+  renderPlotShapesOnMap();
+}
+
+function renderLegal(){
+  const available = state.plots.filter(p => p.status === 'available');
+  const myApps = [...state.applications].sort((a,b)=> new Date(b.submittedAt)-new Date(a.submittedAt));
+  const total = state.applications.length;
+  const pendingCount = state.applications.filter(a=>a.status==='pending').length;
+  const approvedCount = state.applications.filter(a=>a.status==='approved').length;
+
+  shell(`
+    <div class="topbar"><h1>Legal Dashboard</h1><span class="timestamp">${fmtDate(new Date().toISOString())}</span></div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="n" style="color:var(--available)">${available.length}</div><div class="l">Plots available</div></div>
+      <div class="stat-card"><div class="n">${total}</div><div class="l">Applications filed</div></div>
+      <div class="stat-card"><div class="n" style="color:var(--pending)">${pendingCount}</div><div class="l">Awaiting Finance</div></div>
+      <div class="stat-card"><div class="n" style="color:var(--sold)">${approvedCount}</div><div class="l">Approved sales</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Available plots</h2><span class="hint">Apply to sell a plot to a buyer</span></div>
+      ${available.length === 0 ? `<div class="empty-note">No plots are currently available. Check back once Planning cuts out more, or wait for a rejected application to free one up.</div>` : `
+        <div class="plot-card-grid">
+          ${available.map(p => `
+            <div class="plot-card">
+              <div class="row">
+                <span class="code" style="color:var(--primary)">${p.plotNumber}</span>
+                ${pill(p.status)}
+              </div>
+              <div class="location">${p.location}</div>
+              <div class="size">E${p.easting}m N${p.northing}m · ${p.sizeSqm} sqm · ${fmtK(p.value)}</div>
+              <button class="btn btn-accent btn-sm" onclick="openApplyModal('${p.id}')">Apply to sell</button>
+            </div>`).join('')}
+        </div>`}
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Applications filed by Legal</h2></div>
+      ${myApps.length === 0 ? `<div class="empty-note">No applications filed yet.</div>` : `
+        <table>
+          <thead><tr><th>Ref</th><th>Plot</th><th>Buyer</th><th>Amount</th><th>Status</th><th>Filed</th></tr></thead>
+          <tbody>
+            ${myApps.map(a => `
+              <tr>
+                <td><span class="code">${a.appNumber}</span></td>
+                <td><span class="code" style="color:var(--primary)">${a.plotNumber}</span></td>
+                <td>${a.buyerName}</td>
+                <td>${fmtK(a.amount)}</td>
+                <td>${pill(a.status)}</td>
+                <td>${fmtDate(a.submittedAt)}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`}
+    </div>
+  `);
+}
+function openApplyModal(plotId){
+  const p = state.plots.find(x => x.id === plotId);
+  if(!p) return;
+  openModal(`
+    <h2>Apply to sell ${p.plotNumber}</h2>
+    <p class="sub">${p.location} · ${p.sizeSqm} sqm · ${fmtK(p.value)}</p>
+    <div class="form-field"><label>Buyer full name</label><input id="buyerName" type="text" placeholder="e.g. Chanda Mwansa"></div>
+    <div class="form-field"><label>Buyer NRC / ID number</label><input id="buyerId" type="text" placeholder="e.g. 123456/78/1"></div>
+    <div class="form-field"><label>Buyer phone</label><input id="buyerPhone" type="text" placeholder="e.g. +260 97 123 4567"></div>
+    <div class="form-field"><label>Amount paid (ZMW)</label><input id="buyerAmount" type="number" min="1" placeholder="e.g. 45000"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitApplication('${p.id}')">Submit application</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+function submitApplication(plotId){
+  const p = state.plots.find(x => x.id === plotId);
+  if(!p) return;
+  const buyerName = document.getElementById('buyerName').value.trim();
+  const buyerId = document.getElementById('buyerId').value.trim();
+  const buyerPhone = document.getElementById('buyerPhone').value.trim();
+  const amount = parseFloat(document.getElementById('buyerAmount').value);
+  if(!buyerName || !buyerId || !amount || amount <= 0){
+    alert('Enter the buyer\'s name, ID number, and a valid amount paid.');
+    return;
+  }
+  const app = {
+    id: uid(), appNumber: genAppNumber(), plotId: p.id, plotNumber: p.plotNumber,
+    buyerName, buyerId, buyerPhone, amount, status:'pending', submittedAt: new Date().toISOString(), decidedAt:null
+  };
+  state.applications.push(app);
+  p.status = 'pending';
+  log('Legal', 'Application submitted', `${p.plotNumber} · ${buyerName} · ${fmtK(amount)}`);
+  closeModal();
+  renderLegal();
+}
+
+function renderFinance(){
+  const pending = state.applications.filter(a => a.status === 'pending').sort((a,b)=> new Date(a.submittedAt)-new Date(b.submittedAt));
+  const decided = state.applications.filter(a => a.status !== 'pending').sort((a,b)=> new Date(b.decidedAt)-new Date(a.decidedAt));
+  const approvedCount = state.applications.filter(a=>a.status==='approved').length;
+  const rejectedCount = state.applications.filter(a=>a.status==='rejected').length;
+  const revenue = state.applications.filter(a=>a.status==='approved').reduce((s,a)=>s+a.amount,0);
+
+  shell(`
+    <div class="topbar"><h1>Finance Dashboard</h1><span class="timestamp">${fmtDate(new Date().toISOString())}</span></div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="n" style="color:var(--pending)">${pending.length}</div><div class="l">Pending review</div></div>
+      <div class="stat-card"><div class="n" style="color:var(--available)">${approvedCount}</div><div class="l">Approved</div></div>
+      <div class="stat-card"><div class="n" style="color:var(--rejected)">${rejectedCount}</div><div class="l">Rejected</div></div>
+      <div class="stat-card"><div class="n">${fmtK(revenue)}</div><div class="l">Revenue confirmed</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Pending applications</h2><span class="hint">Approving marks the plot as sold; rejecting frees it up again</span></div>
+      ${pending.length === 0 ? `<div class="empty-note">No applications waiting on Finance right now.</div>` : `
+        <table>
+          <thead><tr><th>Ref</th><th>Plot</th><th>Buyer</th><th>Amount</th><th>Filed</th><th></th></tr></thead>
+          <tbody>
+            ${pending.map(a => `
+              <tr>
+                <td><span class="code">${a.appNumber}</span></td>
+                <td><span class="code" style="color:var(--primary)">${a.plotNumber}</span></td>
+                <td>${a.buyerName}<div style="font-size:11.5px;color:var(--ink-muted)">${a.buyerId}</div></td>
+                <td>${fmtK(a.amount)}</td>
+                <td>${fmtDate(a.submittedAt)}</td>
+                <td>
+                  <div style="display:flex; gap:6px;">
+                    <button class="btn btn-approve btn-sm" onclick="decide('${a.id}','approved')">Approve</button>
+                    <button class="btn btn-reject btn-sm" onclick="decide('${a.id}','rejected')">Reject</button>
+                  </div>
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`}
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Decision history</h2></div>
+      ${decided.length === 0 ? `<div class="empty-note">No decisions made yet.</div>` : `
+        <table>
+          <thead><tr><th>Ref</th><th>Plot</th><th>Buyer</th><th>Amount</th><th>Status</th><th>Decided</th></tr></thead>
+          <tbody>
+            ${decided.map(a => `
+              <tr>
+                <td><span class="code">${a.appNumber}</span></td>
+                <td><span class="code" style="color:var(--primary)">${a.plotNumber}</span></td>
+                <td>${a.buyerName}</td>
+                <td>${fmtK(a.amount)}</td>
+                <td>${pill(a.status)}</td>
+                <td>${fmtDate(a.decidedAt)}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`}
+    </div>
+  `);
+}
+function decide(appId, decision){
+  const app = state.applications.find(a => a.id === appId);
+  if(!app) return;
+  const confirmMsg = decision === 'approved'
+    ? `Approve the sale of ${app.plotNumber} to ${app.buyerName} for ${fmtK(app.amount)}? The plot will be marked sold.`
+    : `Reject this application for ${app.plotNumber}? The plot will become available again.`;
+  if(!confirm(confirmMsg)) return;
+  app.status = decision;
+  app.decidedAt = new Date().toISOString();
+  const plot = state.plots.find(p => p.id === app.plotId);
+  if(plot) plot.status = decision === 'approved' ? 'sold' : 'available';
+  log('Finance', decision === 'approved' ? 'Application approved' : 'Application rejected', `${app.plotNumber} · ${app.buyerName} · ${fmtK(app.amount)}`);
+  renderFinance();
+}
+
+function userStatusPill(status){
+  const map = { active:'available', suspended:'pending', blocked:'rejected' };
+  const label = { active:'Active', suspended:'Suspended', blocked:'Blocked' };
+  return `<span class="pill ${map[status]}">${label[status]}</span>`;
+}
+function userActionsHtml(u){
+  if(u.system) return `<span style="font-size:11px; color:var(--ink-muted);">System account</span>`;
+  if(u.status === 'active'){
+    return `<div style="display:flex; gap:6px; flex-wrap:wrap;">
+      <button class="btn btn-block btn-sm" onclick="suspendUser('${u.id}')">Suspend</button>
+      <button class="btn btn-reject btn-sm" onclick="blockUser('${u.id}')">Block</button>
+    </div>`;
+  }
+  return `<button class="btn btn-approve btn-sm" onclick="reactivateUser('${u.id}')">Reactivate</button>`;
+}
+let userFilterRole = 'all';
+function setUserFilter(value){
+  userFilterRole = value;
+  renderIT();
+}
+function userFilterSelectHtml(){
+  const opts = [['all','All departments'],['lands','Planning'],['legal','Legal'],['finance','Finance'],['it','IT'],['auditor','Auditor']];
+  return `<select class="filter-select" onchange="setUserFilter(this.value)">
+    ${opts.map(([v,l]) => `<option value="${v}" ${userFilterRole === v ? 'selected' : ''}>${l}</option>`).join('')}
+  </select>`;
+}
+function usersTableHtml(list){
+  if(list.length === 0) return `<div class="empty-note">No users${userFilterRole === 'all' ? ' yet' : ' in this department'}.</div>`;
+  const sorted = [...list].sort((a,b)=> (b.system - a.system) || new Date(a.createdAt) - new Date(b.createdAt));
+  return `
+    <table>
+      <thead><tr><th>Username</th><th>Role</th><th>Status</th></tr></thead>
+      <tbody>
+        ${sorted.map(u => `
+          <tr style="cursor:pointer;" onclick="openUserModal('${u.id}')">
+            <td><span class="code" style="color:${DEPT_META[u.role].color}; border-color:${DEPT_META[u.role].color};">${DEPT_META[u.role].code}</span> ${u.username}</td>
+            <td>${DEPT_META[u.role].label}</td>
+            <td>${userStatusPill(u.status)}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+function openUserModal(id){
+  const u = state.users.find(x => x.id === id);
+  if(!u) return;
+  openModal(`
+    <div class="code lg" style="color:${DEPT_META[u.role].color}; border-color:${DEPT_META[u.role].color}; margin-bottom:12px;">${DEPT_META[u.role].code}</div>
+    <h2>${u.username}</h2>
+    <p class="sub">${u.fullName || '—'}${u.nrc ? ' · ' + u.nrc : ''}</p>
+    <div style="margin-bottom:18px; display:flex; align-items:center; gap:10px;">
+      ${userStatusPill(u.status)}
+      <span style="font-size:12.5px; color:var(--ink-muted);">${DEPT_META[u.role].label} · created ${fmtDate(u.createdAt)}</span>
+    </div>
+    <div class="btn-row">${userActionsHtml(u)}<button class="btn btn-ghost btn-sm" onclick="closeModal()">Close</button></div>
+  `);
+}
+function slugFromName(fullName){
+  const first = fullName.trim().split(/\s+/)[0] || 'user';
+  return first.toLowerCase().replace(/[^a-z0-9]/g,'') || 'user';
+}
+function genUsername(role, fullName){
+  const base = slugFromName(fullName);
+  const dept = DEPT_META[role].label.toUpperCase();
+  let username = `${base}@${dept}`;
+  let n = 2;
+  while(state.users.some(u => u.username.toLowerCase() === username.toLowerCase())){
+    username = `${base}${n}@${dept}`;
+    n++;
+  }
+  return username;
+}
+function refreshGeneratedUsername(){
+  const role = document.getElementById('newRole').value;
+  const fullName = document.getElementById('newFullName').value.trim();
+  document.getElementById('newUsername').value = fullName ? genUsername(role, fullName) : '';
+}
+function createUser(){
+  const fullName = document.getElementById('newFullName').value.trim();
+  const nrc = document.getElementById('newNrc').value.trim();
+  const password = document.getElementById('newPassword').value;
+  const role = document.getElementById('newRole').value;
+  if(!fullName){ alert("Enter the user's full name."); return; }
+  if(!nrc){ alert("Enter the user's NRC number."); return; }
+  if(!password){ alert('Set a password for this account.'); return; }
+  const username = genUsername(role, fullName);
+  state.users.push({ id: uid(), username, password, role, fullName, nrc, status:'active', system:false, createdAt: new Date().toISOString() });
+  log('IT', 'User created', `${username} · ${fullName} · ${DEPT_META[role].label}`);
+  document.getElementById('newFullName').value = '';
+  document.getElementById('newNrc').value = '';
+  document.getElementById('newPassword').value = '';
+  document.getElementById('newUsername').value = '';
+  renderIT();
+}
+function suspendUser(id){
+  const u = state.users.find(x => x.id === id);
+  if(!u || u.system) return;
+  u.status = 'suspended';
+  log('IT', 'User suspended', u.username);
+  closeModal();
+  renderIT();
+}
+function blockUser(id){
+  const u = state.users.find(x => x.id === id);
+  if(!u || u.system) return;
+  u.status = 'blocked';
+  log('IT', 'User blocked', u.username);
+  closeModal();
+  renderIT();
+}
+function reactivateUser(id){
+  const u = state.users.find(x => x.id === id);
+  if(!u || u.system) return;
+  u.status = 'active';
+  log('IT', 'User reactivated', u.username);
+  closeModal();
+  renderIT();
+}
+
+function renderIT(){
+  const totalPlots = state.plots.length;
+  const totalApps = state.applications.length;
+  const totalUsers = state.users.length;
+  const activeUsers = state.users.filter(u => u.status === 'active').length;
+  const recentLog = state.activityLog.slice(0, 40);
+  const filteredUsers = userFilterRole === 'all' ? state.users : state.users.filter(u => u.role === userFilterRole);
+
+  const usersDockHtml = `
+    <div class="panel-head">
+      <h2>All users</h2>
+      <span class="hint">${filteredUsers.length} user${filteredUsers.length === 1 ? '' : 's'}</span>
+    </div>
+    <div style="margin-bottom:14px;">${userFilterSelectHtml()}</div>
+    ${usersTableHtml(filteredUsers)}
+  `;
+
+  shell(`
+    <div class="topbar"><h1>IT Dashboard</h1><span class="timestamp">${fmtDate(new Date().toISOString())}</span></div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="n">${totalPlots}</div><div class="l">Total plots</div></div>
+      <div class="stat-card"><div class="n">${totalApps}</div><div class="l">Total applications</div></div>
+      <div class="stat-card"><div class="n">${totalUsers}</div><div class="l">Total users</div></div>
+      <div class="stat-card"><div class="n" style="color:var(--available)">${activeUsers}</div><div class="l">Active users</div></div>
+    </div>
+
+    <div class="layout-2col">
+      <div class="panel">
+        <div class="panel-head"><h2>Activity log</h2><span class="hint">Most recent first</span></div>
+        ${recentLog.length === 0 ? `<div class="empty-note">No activity recorded yet.</div>` : recentLog.map(item => `
+          <div class="log-item">
+            <div class="log-ts">${fmtLogTs(item.ts)}</div>
+            <div class="log-body">
+              <div class="action">${item.dept} · ${item.action}</div>
+              <div class="detail">${item.detail}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Create user</h2></div>
+        <div class="form-field"><label>Full name</label><input id="newFullName" type="text" placeholder="e.g. Chanda Mwansa" oninput="refreshGeneratedUsername()"></div>
+        <div class="form-field"><label>NRC number</label><input id="newNrc" type="text" placeholder="e.g. 123456/78/1"></div>
+        <div class="form-field">
+          <label>Department / role</label>
+          <select id="newRole" onchange="refreshGeneratedUsername()">
+            <option value="lands">Planning</option>
+            <option value="legal">Legal</option>
+            <option value="finance">Finance</option>
+            <option value="auditor">Auditor</option>
+            <option value="it">IT</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Generated username</label>
+          <input id="newUsername" type="text" placeholder="Fill in the full name above" readonly>
+        </div>
+        <div class="form-field"><label>Password</label><input id="newPassword" type="text" placeholder="Set a password"></div>
+        <button class="btn btn-primary btn-full" onclick="createUser()">Create user</button>
+      </div>
+    </div>
+  `, usersDockHtml);
+}
+
+function auditorApplicationsHtml(){
+  if(state.applications.length === 0) return `<div class="empty-note">No applications yet.</div>`;
+  const sorted = [...state.applications].sort((a,b)=> new Date(b.submittedAt) - new Date(a.submittedAt));
+  return `
+    <table>
+      <thead><tr><th>Ref</th><th>Plot</th><th>Buyer</th><th>Amount</th><th>Status</th><th>Filed</th></tr></thead>
+      <tbody>
+        ${sorted.map(a => `
+          <tr>
+            <td><span class="code">${a.appNumber}</span></td>
+            <td><span class="code" style="color:var(--primary)">${a.plotNumber}</span></td>
+            <td>${a.buyerName}</td>
+            <td>${fmtK(a.amount)}</td>
+            <td>${pill(a.status)}</td>
+            <td>${fmtDate(a.submittedAt)}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+function auditorLogHtml(){
+  if(state.activityLog.length === 0) return `<div class="empty-note">No activity recorded yet.</div>`;
+  return state.activityLog.slice(0, 60).map(item => `
+    <div class="log-item">
+      <div class="log-ts">${fmtLogTs(item.ts)}</div>
+      <div class="log-body">
+        <div class="action">${item.dept} · ${item.action}</div>
+        <div class="detail">${item.detail}</div>
+      </div>
+    </div>`).join('');
+}
+function renderAuditor(){
+  const totalPlots = state.plots.length;
+  const totalApps = state.applications.length;
+  const revenue = state.applications.filter(a=>a.status==='approved').reduce((s,a)=>s+a.amount,0);
+  const activeUsers = state.users.filter(u=>u.status==='active').length;
+
+  shell(`
+    <div class="topbar"><h1>Auditor Dashboard</h1><span class="timestamp">${fmtDate(new Date().toISOString())}</span></div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="n">${totalPlots}</div><div class="l">Total plots</div></div>
+      <div class="stat-card"><div class="n">${totalApps}</div><div class="l">Total applications</div></div>
+      <div class="stat-card"><div class="n">${fmtK(revenue)}</div><div class="l">Revenue confirmed</div></div>
+      <div class="stat-card"><div class="n" style="color:var(--available)">${activeUsers}</div><div class="l">Active users</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Plot map</h2><span class="hint">Read-only</span></div>
+      <div class="map-canvas readonly" id="mapCanvas">
+        ${MAP_SVG}
+        <div id="plotsLayer"></div>
+        <div class="map-legend">
+          <div class="row"><span class="dot" style="background:var(--available)"></span>Available</div>
+          <div class="row"><span class="dot" style="background:var(--pending)"></span>Pending</div>
+          <div class="row"><span class="dot" style="background:var(--sold)"></span>Sold</div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>All applications</h2></div>
+      ${auditorApplicationsHtml()}
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Full activity log</h2></div>
+      ${auditorLogHtml()}
+    </div>
+  `);
+  renderPlotShapesOnMap();
+}
+
+navigateTo('login');
+</script>
+</body>
+</html>
