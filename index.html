@@ -3,157 +3,164 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Land Registry — Demonstration System</title>
+<title>Ndola Land Management System</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --primary:#1B4332;
-    --primary-dark:#122E22;
-    --primary-tint:#E4EDE7;
-    --accent:#C67C3E;
-    --accent-dark:#A5642E;
-    --bg:#F1F3EF;
+    --primary:#14532D;
+    --primary-dark:#0B3B20;
+    --primary-tint:#ECF5EF;
+    --accent:#14532D;
+    --bg:#F6F7F9;
     --surface:#FFFFFF;
-    --ink:#1F2A24;
-    --ink-muted:#5B6B62;
-    --border:#DDE3DC;
-    --available:#2F9E44;
-    --pending:#E8A33D;
-    --sold:#1B4332;
-    --rejected:#C1443C;
+    --ink:#111827;
+    --ink-muted:#6B7280;
+    --ink-soft:#9CA3AF;
+    --border:#E5E7EB;
+    --border-strong:#D1D5DB;
+    --available:#15803D;
+    --pending:#B45309;
+    --sold:#1E3A8A;
+    --rejected:#B91C1C;
+    --sidebar:#0F1F17;
     --radius:10px;
-    --shadow:0 1px 2px rgba(31,42,36,0.06), 0 4px 14px rgba(31,42,36,0.06);
+    --shadow:0 1px 2px rgba(16,24,40,0.04), 0 1px 3px rgba(16,24,40,0.06);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:var(--bg);
-    color:var(--ink);
-    font-family:'IBM Plex Sans',-apple-system,Segoe UI,sans-serif;
+    background:var(--bg); color:var(--ink);
+    font-family:'Inter',-apple-system,'Segoe UI',Roboto,sans-serif; font-size:14px; line-height:1.5;
     -webkit-font-smoothing:antialiased;
   }
-  h1,h2,h3{font-family:'Space Grotesk',sans-serif; margin:0; letter-spacing:-0.01em;}
+  h1,h2,h3{font-family:inherit; margin:0; letter-spacing:-0.015em; font-weight:600;}
   p{margin:0;}
   button{font-family:inherit; cursor:pointer;}
   input,textarea,select{font-family:inherit;}
   a{color:inherit;}
-  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  :focus-visible{outline:2px solid rgba(20,83,45,0.45); outline-offset:2px;}
 
+  /* Reference codes & status */
   .code{
-    font-family:'IBM Plex Mono',monospace;
-    font-weight:600;
-    letter-spacing:0.03em;
-    display:inline-block;
-    padding:3px 8px;
-    border:1px solid currentColor;
-    border-radius:4px;
-    font-size:12.5px;
+    font-family:'JetBrains Mono',ui-monospace,monospace; font-weight:500; font-size:12px;
+    display:inline-block; padding:2px 7px; border-radius:5px;
+    background:#F3F4F6; color:var(--ink) !important; border:1px solid var(--border) !important;
   }
-  .code.lg{font-size:14px; padding:4px 10px;}
-
+  .code.lg{font-size:13px; padding:4px 10px;}
   .pill{
     display:inline-flex; align-items:center; gap:6px;
-    font-size:12.5px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;
-    padding:4px 10px; border-radius:999px;
+    font-size:12px; font-weight:500; padding:2px 10px; border-radius:999px; white-space:nowrap;
   }
-  .pill::before{content:''; width:7px; height:7px; border-radius:50%; background:currentColor;}
-  .pill.available{color:var(--available); background:rgba(47,158,68,0.1);}
-  .pill.pending{color:var(--pending); background:rgba(232,163,61,0.14);}
-  .pill.sold{color:var(--sold); background:rgba(27,67,50,0.1);}
-  .pill.rejected{color:var(--rejected); background:rgba(193,68,60,0.1);}
+  .pill::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor;}
+  .pill.available, .pill.approved{color:var(--available); background:#ECFDF3;}
+  .pill.pending{color:var(--pending); background:#FFFAEB;}
+  .pill.sold{color:var(--sold); background:#EFF4FF;}
+  .pill.rejected{color:var(--rejected); background:#FEF3F2;}
 
-  .login-page{
-    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
-    background-color:var(--bg);
-    background-image: linear-gradient(rgba(27,67,50,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(27,67,50,0.05) 1px, transparent 1px);
-    background-size:34px 34px;
+  /* Login */
+  .login-page{min-height:100vh; display:grid; grid-template-columns:1fr 1fr; background:var(--surface);}
+  .login-brand{
+    background:var(--sidebar); color:#fff; padding:48px 56px; display:flex; flex-direction:column; justify-content:space-between;
+    background-image:radial-gradient(circle at 20% 110%, rgba(34,197,94,0.18), transparent 55%);
   }
+  .login-brand .top{display:flex; align-items:center; gap:12px;}
+  .login-brand .emblem{
+    height:40px; padding:0 10px; border-radius:10px; background:#fff; color:var(--sidebar);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; letter-spacing:0.04em;
+  }
+  .login-brand .top span{font-weight:600; font-size:15px;}
+  .login-brand h1{font-size:34px; line-height:1.2; max-width:420px; font-weight:600;}
+  .login-brand .tag{margin-top:14px; color:rgba(255,255,255,0.65); font-size:15px; max-width:400px;}
+  .login-brand .foot{font-size:12.5px; color:rgba(255,255,255,0.45);}
+  .login-form-side{display:flex; align-items:center; justify-content:center; padding:40px 24px;}
   .login-card{width:100%; max-width:380px;}
-  .login-logo{display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:26px;}
-  .login-logo .mark{
-    width:40px; height:40px; border-radius:9px; background:var(--primary); color:#fff;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:14px; letter-spacing:0.02em;
-  }
-  .login-logo .word{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:17px; color:var(--ink);}
-  .login-panel{
-    background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:30px 26px;
-    box-shadow:0 10px 34px rgba(31,42,36,0.09), 0 2px 8px rgba(31,42,36,0.05);
-  }
-  .login-panel h2{font-size:19px; margin-bottom:4px;}
-  .login-panel .sub{font-size:13px; color:var(--ink-muted); margin-bottom:22px;}
-  .login-hint{
-    margin-top:18px; padding:12px 14px; background:var(--primary-tint); border-radius:8px;
-    font-size:12.5px; color:var(--primary-dark); line-height:1.55;
-  }
-  .login-hint strong{font-family:'IBM Plex Mono',monospace;}
-  .reset-row{text-align:center; margin-top:24px; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;}
-  .text-link{
-    background:none; border:none; color:var(--ink-muted); font-size:13px; text-decoration:underline;
-    text-underline-offset:3px; cursor:pointer; font-family:inherit; padding:0;
-  }
-  .disclaimer{
-    text-align:center; font-size:12px; color:var(--ink-muted); max-width:520px; margin:14px auto 0; line-height:1.5;
-  }
+  .login-panel h2{font-size:24px; margin-bottom:6px;}
+  .login-panel .sub{font-size:14px; color:var(--ink-muted); margin-bottom:28px;}
+  .login-panel .btn-full{padding:11px 16px; font-size:14px; margin-top:6px;}
+  @media (max-width:880px){ .login-page{grid-template-columns:1fr;} .login-brand{display:none;} }
 
-  .shell{display:grid; grid-template-columns:220px 1fr; min-height:100vh;}
-  .shell.with-dock{grid-template-columns:220px 1fr 400px;}
+  /* App shell */
+  .shell{display:grid; grid-template-columns:248px 1fr; min-height:100vh;}
+  .shell.with-dock{grid-template-columns:248px 1fr 410px;}
   @media (max-width:1300px){
-    .shell.with-dock{grid-template-columns:220px 1fr; grid-template-areas:"sidebar main" "dock dock";}
+    .shell.with-dock{grid-template-columns:248px 1fr; grid-template-areas:"sidebar main" "sidebar dock";}
     .shell.with-dock .sidebar{grid-area:sidebar;}
     .shell.with-dock .main{grid-area:main;}
-    .shell.with-dock .right-dock{grid-area:dock; margin:0 24px 24px;}
+    .shell.with-dock .right-dock{grid-area:dock; margin:0 32px 32px;}
   }
-  .right-dock{
-    margin:24px 24px 24px 0; padding:20px; align-self:start;
-    border:1px solid var(--border); border-radius:var(--radius); background:var(--surface);
-    box-shadow:var(--shadow); overflow-x:auto;
+  .sidebar{
+    background:var(--sidebar); color:#fff; padding:20px 14px; display:flex; flex-direction:column;
+    position:sticky; top:0; height:100vh;
   }
-  .right-dock .panel-head{margin-bottom:12px;}
-  .sidebar{background:var(--primary); color:#fff; padding:22px 18px; display:flex; flex-direction:column;}
-  .sidebar .brand{font-size:13px; font-weight:600; letter-spacing:0.04em; opacity:0.7; margin-bottom:28px;}
-  .sidebar .dept-title{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
-  .sidebar .dept-title h2{font-size:18px; color:#fff;}
-  .sidebar .role-note{font-size:12.5px; color:rgba(255,255,255,0.65); line-height:1.5; margin-bottom:28px;}
-  .sidebar nav{display:flex; flex-direction:column; gap:4px; flex:1;}
+  .sidebar .brand{display:flex; align-items:center; gap:10px; padding:4px 8px 22px; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:18px;}
+  .sidebar .brand .emblem{
+    height:32px; padding:0 7px; border-radius:8px; background:#fff; color:var(--sidebar); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:10.5px; letter-spacing:0.03em;
+  }
+  .sidebar .brand .name{font-size:13px; font-weight:600; line-height:1.3;}
+  .sidebar .section-label{font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:0.06em; color:rgba(255,255,255,0.4); padding:0 10px; margin-bottom:8px;}
+  .sidebar nav{display:flex; flex-direction:column; gap:2px; flex:1;}
   .sidebar nav .item{
-    padding:9px 10px; border-radius:7px; font-size:14px; font-weight:500;
-    background:rgba(255,255,255,0.1);
+    display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:7px;
+    font-size:14px; font-weight:500; background:rgba(255,255,255,0.08); color:#fff;
   }
-  .sidebar .switch-btn{
-    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#fff;
-    padding:10px 12px; border-radius:8px; font-size:13px; font-weight:500; margin-top:auto;
-    transition:background .15s ease;
+  .sidebar nav .item svg{opacity:0.8;}
+  .sidebar .user-card{border-top:1px solid rgba(255,255,255,0.08); padding-top:16px; margin-top:16px;}
+  .sidebar .user-row{display:flex; align-items:center; gap:10px; padding:0 6px; margin-bottom:14px;}
+  .sidebar .avatar{
+    width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.12);
+    display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; flex-shrink:0;
   }
-  .sidebar .switch-btn:hover{background:rgba(255,255,255,0.16);}
+  .sidebar .user-row .u{font-size:13px; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .sidebar .user-row .r{font-size:12px; color:rgba(255,255,255,0.5);}
+  .sidebar .side-actions{display:flex; gap:6px;}
+  .sidebar .switch-btn, .sidebar .side-btn{
+    flex:1; background:transparent; border:1px solid rgba(255,255,255,0.14); color:rgba(255,255,255,0.85);
+    padding:7px 8px; border-radius:7px; font-size:12.5px; font-weight:500; transition:background .15s ease;
+  }
+  .sidebar .switch-btn:hover, .sidebar .side-btn:hover{background:rgba(255,255,255,0.08); color:#fff;}
 
-  .main{padding:26px 30px 60px; max-width:1180px;}
-  .topbar{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap; gap:8px;}
-  .topbar h1{font-size:23px;}
-  .topbar .timestamp{font-size:12.5px; color:var(--ink-muted); font-family:'IBM Plex Mono',monospace;}
+  .main{padding:28px 32px 56px; min-width:0;}
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    margin-bottom:24px;
+  }
+  .topbar h1{font-size:22px;}
+  .topbar .timestamp{font-size:13px; color:var(--ink-muted);}
+  .page-sub{font-size:13.5px; color:var(--ink-muted); margin-top:2px;}
 
-  .stats-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px; margin-bottom:26px;}
+  .stats-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:16px; margin-bottom:24px;}
   .stat-card{
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-    padding:16px 18px; box-shadow:var(--shadow);
+    padding:18px 20px; box-shadow:var(--shadow); display:flex; flex-direction:column-reverse; gap:6px;
   }
-  .stat-card .n{font-family:'Space Grotesk',sans-serif; font-size:26px; font-weight:600;}
-  .stat-card .l{font-size:12.5px; color:var(--ink-muted); margin-top:2px;}
+  .stat-card .n{font-size:26px; font-weight:600; letter-spacing:-0.02em; line-height:1.15;}
+  .stat-card .l{font-size:13px; color:var(--ink-muted); font-weight:500;}
 
   .panel{
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-    box-shadow:var(--shadow); padding:20px; margin-bottom:22px;
+    box-shadow:var(--shadow); padding:20px 22px; margin-bottom:24px;
   }
   .panel-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:8px;}
-  .panel-head h2{font-size:16px;}
-  .panel-head .hint{font-size:12.5px; color:var(--ink-muted);}
+  .panel-head h2{font-size:15px;}
+  .panel-head .hint{font-size:13px; color:var(--ink-muted);}
+  .right-dock{
+    margin:28px 32px 32px 0; padding:20px 22px; align-self:start;
+    border:1px solid var(--border); border-radius:var(--radius); background:var(--surface);
+    box-shadow:var(--shadow); overflow-x:auto;
+  }
 
-  .layout-2col{display:grid; grid-template-columns:1.5fr 1fr; gap:22px; align-items:start;}
+  .right-dock td, .right-dock th{white-space:nowrap; padding-left:10px; padding-right:10px;}
+  .layout-2col{display:grid; grid-template-columns:1.5fr 1fr; gap:24px; align-items:start;}
   @media (max-width:960px){ .layout-2col{grid-template-columns:1fr;} }
-  .layout-map{display:grid; grid-template-columns:2.4fr 1fr; gap:22px; align-items:start;}
-  @media (max-width:1000px){ .layout-map{grid-template-columns:1fr;} }
+  .layout-map{display:grid; grid-template-columns:2.2fr 1fr; gap:24px; align-items:start;}
+  @media (max-width:1100px){ .layout-map{grid-template-columns:1fr;} }
 
+  /* Map */
   .map-canvas{
     position:relative; width:100%; aspect-ratio:700/460; border-radius:8px; overflow:hidden;
     border:1px solid var(--border); cursor:crosshair; user-select:none;
@@ -162,115 +169,115 @@
   .map-canvas svg{width:100%; height:100%; display:block;}
   #plotsLayer{position:absolute; inset:0; pointer-events:none;}
   .plot-shape{
-    position:absolute; border:2px solid #fff; border-radius:3px; cursor:pointer; pointer-events:auto;
-    box-shadow:0 1px 3px rgba(0,0,0,0.35); transition:filter .12s ease;
+    position:absolute; border:1.5px solid #fff; border-radius:3px; cursor:pointer; pointer-events:auto;
+    box-shadow:0 1px 3px rgba(0,0,0,0.25); transition:filter .12s ease;
     display:flex; align-items:center; justify-content:center; overflow:hidden;
-    font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:600; color:#fff; letter-spacing:0.02em;
-    text-shadow:0 1px 1px rgba(0,0,0,0.4);
+    font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:600; color:#fff;
   }
-  .plot-shape:hover{filter:brightness(1.15);}
-  .plot-shape.available{background:rgba(47,158,68,0.78);}
-  .plot-shape.pending{background:rgba(232,163,61,0.82);}
-  .plot-shape.sold{background:rgba(27,67,50,0.82);}
-  .plot-shape.temp{background:rgba(154,166,158,0.35); border-style:dashed; border-color:#9AA69E; pointer-events:none; box-shadow:none;}
+  .plot-shape:hover{filter:brightness(1.12);}
+  .plot-shape.available{background:rgba(21,128,61,0.8);}
+  .plot-shape.pending{background:rgba(217,119,6,0.85);}
+  .plot-shape.sold{background:rgba(30,58,138,0.82);}
+  .plot-shape.temp{background:rgba(20,83,45,0.12); border:1.5px dashed var(--primary); pointer-events:none; box-shadow:none;}
   .map-legend{
-    position:absolute; right:10px; bottom:10px; background:rgba(255,255,255,0.92); border:1px solid var(--border);
-    border-radius:7px; padding:8px 10px; pointer-events:none; box-shadow:var(--shadow);
+    position:absolute; right:10px; bottom:10px; background:rgba(255,255,255,0.95); border:1px solid var(--border);
+    border-radius:8px; padding:8px 12px; pointer-events:none; box-shadow:var(--shadow);
   }
-  .map-legend .row{display:flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-muted); margin:2px 0;}
-  .map-legend .dot{width:8px; height:8px; border-radius:2px; flex-shrink:0;}
+  .map-legend .row{display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--ink-muted); margin:2px 0;}
+  .map-legend .dot{width:9px; height:9px; border-radius:2px; flex-shrink:0;}
 
-  .form-field{margin-bottom:14px;}
-  .form-field label{display:block; font-size:12.5px; font-weight:600; color:var(--ink-muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:0.03em;}
+  /* Forms */
+  .form-field{margin-bottom:16px;}
+  .form-field label{display:block; font-size:13px; font-weight:500; color:#374151; margin-bottom:6px;}
   .form-field input, .form-field textarea, .form-field select{
-    width:100%; padding:9px 11px; border:1px solid var(--border); border-radius:7px; font-size:14px; color:var(--ink);
-    background:#fcfcfb;
+    width:100%; padding:9px 12px; border:1px solid var(--border-strong); border-radius:8px; font-size:14px; color:var(--ink);
+    background:#fff; transition:border-color .15s ease, box-shadow .15s ease;
   }
-  .form-field input:focus, .form-field textarea:focus, .form-field select:focus{border-color:var(--accent);}
-  .form-field input[readonly]{background:var(--primary-tint); color:var(--primary-dark); font-family:'IBM Plex Mono',monospace; font-weight:600;}
+  .form-field input::placeholder{color:var(--ink-soft);}
+  .form-field input:focus, .form-field textarea:focus, .form-field select:focus{
+    outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(20,83,45,0.12);
+  }
+  .form-field input[readonly]{background:#F9FAFB; color:var(--ink); border-color:var(--border);}
   .filter-select{
-    padding:6px 10px; border:1px solid var(--border); border-radius:7px; font-size:12.5px;
-    background:#fcfcfb; color:var(--ink);
+    padding:7px 10px; border:1px solid var(--border-strong); border-radius:8px; font-size:13px; background:#fff; color:var(--ink);
   }
   .form-row-2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+
+  /* Buttons */
   .btn{
     display:inline-flex; align-items:center; justify-content:center; gap:6px;
-    padding:9px 16px; border-radius:7px; font-size:13.5px; font-weight:600; border:none;
-    transition:filter .15s ease, transform .1s ease;
+    padding:9px 16px; border-radius:8px; font-size:13.5px; font-weight:500; border:1px solid transparent;
+    transition:background .15s ease, border-color .15s ease;
   }
-  .btn:active{transform:scale(0.98);}
-  .btn-primary{background:var(--primary); color:#fff;}
-  .btn-primary:hover{filter:brightness(1.12);}
-  .btn-accent{background:var(--accent); color:#fff;}
-  .btn-accent:hover{filter:brightness(1.08);}
-  .btn-ghost{background:transparent; color:var(--ink-muted); border:1px solid var(--border);}
-  .btn-ghost:hover{background:var(--bg);}
-  .btn-approve{background:rgba(47,158,68,0.12); color:var(--available);}
-  .btn-approve:hover{background:rgba(47,158,68,0.2);}
-  .btn-reject{background:rgba(193,68,60,0.1); color:var(--rejected);}
-  .btn-reject:hover{background:rgba(193,68,60,0.18);}
-  .btn-block{background:rgba(31,42,36,0.08); color:var(--ink);}
-  .btn-block:hover{background:rgba(31,42,36,0.15);}
-  .btn-row{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;}
+  .btn-primary, .btn-accent{background:var(--primary); color:#fff;}
+  .btn-primary:hover, .btn-accent:hover{background:var(--primary-dark);}
+  .btn-ghost{background:#fff; color:#374151; border-color:var(--border-strong);}
+  .btn-ghost:hover{background:#F9FAFB;}
+  .btn-approve{background:#fff; color:var(--available); border-color:#ABEFC6;}
+  .btn-approve:hover{background:#ECFDF3;}
+  .btn-reject{background:#fff; color:var(--rejected); border-color:#FECDCA;}
+  .btn-reject:hover{background:#FEF3F2;}
+  .btn-block{background:#fff; color:#374151; border-color:var(--border-strong);}
+  .btn-block:hover{background:#F9FAFB;}
+  .btn-row{display:flex; gap:8px; margin-top:18px; flex-wrap:wrap;}
   .btn-sm{padding:6px 12px; font-size:12.5px;}
-  .btn-full{width:100%; justify-content:center;}
+  .btn-full{width:100%;}
+  .btn[disabled]{opacity:0.6; cursor:wait;}
 
   .empty-note{
-    border:1px dashed var(--border); border-radius:8px; padding:20px; text-align:center;
-    color:var(--ink-muted); font-size:13.5px;
+    border:1px dashed var(--border-strong); border-radius:8px; padding:28px 20px; text-align:center;
+    color:var(--ink-muted); font-size:13.5px; background:#FCFCFD;
   }
-  .field-hint{font-size:12px; color:var(--ink-muted); margin-top:10px;}
+  .field-hint{font-size:12.5px; color:var(--ink-muted); margin-top:12px;}
 
-  table{width:100%; border-collapse:collapse;}
+  /* Tables */
+  table{width:100%; border-collapse:separate; border-spacing:0;}
   th{
-    text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-muted);
-    padding:8px 10px; border-bottom:1px solid var(--border);
+    text-align:left; font-size:12px; font-weight:500; color:var(--ink-muted);
+    padding:10px 12px; background:#F9FAFB; border-bottom:1px solid var(--border); white-space:nowrap;
   }
-  td{padding:11px 10px; font-size:13.5px; border-bottom:1px solid var(--border); vertical-align:middle;}
+  th:first-child{border-top-left-radius:8px;} th:last-child{border-top-right-radius:8px;}
+  td{padding:12px; font-size:13.5px; border-bottom:1px solid var(--border); vertical-align:middle;}
+  tbody tr:hover td{background:#FAFAFB;}
   tr:last-child td{border-bottom:none;}
 
-  .plot-list-item{
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    padding:11px 4px; border-bottom:1px solid var(--border);
-  }
+  .plot-list-item{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 2px; border-bottom:1px solid var(--border);}
   .plot-list-item:last-child{border-bottom:none;}
-  .plot-list-item .meta{font-size:12.5px; color:var(--ink-muted); margin-top:3px;}
+  .plot-list-item .meta{font-size:12.5px; color:var(--ink-muted); margin-top:5px;}
 
-  .plot-card{
-    border:1px solid var(--border); border-radius:9px; padding:16px; display:flex; flex-direction:column; gap:10px;
-    background:#fcfcfb;
-  }
-  .plot-card-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px;}
+  .plot-card-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px;}
+  .plot-card{border:1px solid var(--border); border-radius:10px; padding:16px; display:flex; flex-direction:column; gap:8px; background:#fff; transition:border-color .15s ease, box-shadow .15s ease;}
+  .plot-card:hover{border-color:var(--border-strong); box-shadow:var(--shadow);}
   .plot-card .row{display:flex; justify-content:space-between; align-items:center;}
-  .plot-card .location{font-size:13.5px; font-weight:600;}
+  .plot-card .location{font-size:14px; font-weight:600; margin-top:4px;}
   .plot-card .size{font-size:12.5px; color:var(--ink-muted);}
+  .plot-card .btn{margin-top:6px;}
 
-  .log-item{display:flex; gap:12px; padding:10px 0; border-bottom:1px solid var(--border);}
+  .log-item{display:flex; gap:14px; padding:12px 0; border-bottom:1px solid var(--border);}
   .log-item:last-child{border-bottom:none;}
-  .log-item .log-ts{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-muted); width:120px; flex-shrink:0; padding-top:2px;}
-  .log-item .log-body .action{font-size:13.5px; font-weight:600;}
+  .log-item .log-ts{font-size:12px; color:var(--ink-soft); width:96px; flex-shrink:0; padding-top:1px;}
+  .log-item .log-body .action{font-size:13.5px; font-weight:500;}
   .log-item .log-body .detail{font-size:12.5px; color:var(--ink-muted); margin-top:2px;}
 
-  .modal-overlay{
-    position:fixed; inset:0; background:rgba(18,46,34,0.45); display:flex; align-items:center; justify-content:center;
-    padding:20px; z-index:1000;
-  }
-  .modal-box{
-    background:var(--surface); border-radius:12px; padding:26px; width:100%; max-width:420px;
-    box-shadow:0 20px 60px rgba(0,0,0,0.25);
-  }
-  .modal-box h2{font-size:17px; margin-bottom:4px;}
-  .modal-box .sub{font-size:13px; color:var(--ink-muted); margin-bottom:18px;}
+  /* Modal */
+  .modal-overlay{position:fixed; inset:0; background:rgba(17,24,39,0.45); display:flex; align-items:center; justify-content:center; padding:20px; z-index:1000; backdrop-filter:blur(2px);}
+  .modal-box{background:var(--surface); border-radius:14px; padding:26px; width:100%; max-width:440px; box-shadow:0 24px 48px -12px rgba(16,24,40,0.25);}
+  .modal-box h2{font-size:18px; margin-bottom:4px;}
+  .modal-box .sub{font-size:13.5px; color:var(--ink-muted); margin-bottom:20px;}
 
-  .login-error{color:var(--rejected); font-size:13px; margin-bottom:14px;}
+  .login-error{color:var(--rejected); background:#FEF3F2; border:1px solid #FECDCA; border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:18px;}
+  .login-info{color:var(--primary); background:var(--primary-tint); border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:18px;}
+  .loading-screen{min-height:100vh; display:flex; align-items:center; justify-content:center; color:var(--ink-muted); font-size:14px;}
 
   @media (max-width:820px){
-    .shell{grid-template-columns:1fr;}
-    .sidebar{flex-direction:row; align-items:center; padding:14px 18px; gap:14px;}
-    .sidebar .brand, .sidebar .role-note{display:none;}
-    .sidebar nav{display:none;}
-    .sidebar .switch-btn{margin-top:0; margin-left:auto;}
+    .shell, .shell.with-dock{grid-template-columns:1fr; grid-template-areas:none;}
+    .shell.with-dock .sidebar, .shell.with-dock .main, .shell.with-dock .right-dock{grid-area:auto;}
+    .sidebar{position:static; height:auto; flex-direction:row; align-items:center; padding:12px 16px; gap:12px;}
+    .sidebar .brand{border:none; margin:0; padding:0;}
+    .sidebar .section-label, .sidebar nav, .sidebar .user-row{display:none;}
+    .sidebar .user-card{border:none; margin:0 0 0 auto; padding:0;}
     .main{padding:20px 16px 40px;}
+    .right-dock{margin:0 16px 24px !important;}
   }
 </style>
 </head>
@@ -283,11 +290,40 @@ const MAP_EXTENT_E = 1000;
 const MAP_EXTENT_N = 650;
 const LAND_RATE_PER_SQM = 850;
 
-const DEFAULT_ADMIN = { id:'sys-admin', username:'admin@IT', password:'admin', role:'it', fullName:'System Administrator', nrc:'—', status:'active', system:true, createdAt:new Date().toISOString() };
+// ================= Firebase =================
+const firebaseConfig = {
+  apiKey: "AIzaSyDY094AYc7ouwRSympqCeWywT1SCVPDgws",
+  authDomain: "unihome1-3e107.firebaseapp.com",
+  projectId: "unihome1-3e107",
+  storageBucket: "unihome1-3e107.firebasestorage.app",
+  messagingSenderId: "420673785021",
+  appId: "1:420673785021:web:98b3740311f0553d617bd4",
+  measurementId: "G-KQSJ8L6TW3"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-const state = { plots: [], applications: [], activityLog: [], users: [ DEFAULT_ADMIN ] };
+const SYSTEM_NAME = 'Ndola Land Management System';
+const EMAIL_DOMAIN = 'ndola-lms.app';
+
+// Default IT manager account (created automatically the first time it signs in)
+const DEFAULT_ADMIN_USERNAME = 'admin@IT';
+const DEFAULT_ADMIN_PASSWORD = 'Admin@123';
+
+// "chanda@PLANNING" -> "chanda.planning@ndola-lms.app"
+function usernameToEmail(username){
+  const [local, dept] = username.trim().toLowerCase().split('@');
+  if(!local || !dept) return null;
+  return `${local}.${dept}@${EMAIL_DOMAIN}`;
+}
+const DEFAULT_ADMIN_EMAIL = usernameToEmail(DEFAULT_ADMIN_USERNAME);
+
+const state = { plots: [], applications: [], activityLog: [], users: [] };
 let currentUser = null;
-let currentView = 'login';
+let currentView = 'loading';
+let unsubscribers = [];
+let loginMessage = null; // { type:'error'|'info', text }
 
 const DEPT_META = {
   lands:   { label:'Planning', code:'PL', color:'#1B4332', desc:'Cut out and register new plots on the map.' },
@@ -297,17 +333,161 @@ const DEPT_META = {
   auditor: { label:'Auditor',  code:'AU', color:'#4B5563', desc:'View system activity without making changes.' }
 };
 
-function resetDemoData(){
-  if(!confirm('Clear all plots, applications, log entries and users (except the default admin), and start blank again?')) return;
-  state.plots = [];
-  state.applications = [];
-  state.activityLog = [];
-  state.users = [ DEFAULT_ADMIN ];
-  currentUser = null;
-  navigateTo('login');
+function esc(v){
+  return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+function friendlyError(err){
+  const map = {
+    'auth/operation-not-allowed': 'Email/Password sign-in is not enabled in the Firebase console (Authentication → Sign-in method).',
+    'auth/too-many-requests': 'Too many attempts. Wait a moment and try again.',
+    'auth/network-request-failed': 'Network error. Check your internet connection.',
+    'auth/weak-password': 'Password must be at least 6 characters.',
+    'auth/email-already-in-use': 'That username is already taken.',
+    'permission-denied': 'You do not have permission to do that. Check the Firestore security rules.'
+  };
+  return map[err && err.code] || (err && err.message) || 'Something went wrong.';
+}
+
+// ---------- Auth state ----------
+auth.onAuthStateChanged(async (fbUser) => {
+  stopListeners();
+  if(!fbUser){
+    currentUser = null;
+    navigateTo('login');
+    return;
+  }
+  try{
+    const ref = db.collection('users').doc(fbUser.uid);
+    let snap = await ref.get();
+    // First sign-in of the default IT manager: create its profile
+    if(!snap.exists && fbUser.email === DEFAULT_ADMIN_EMAIL){
+      await ref.set({
+        username: DEFAULT_ADMIN_USERNAME, role:'it', fullName:'IT Manager', nrc:'—',
+        status:'active', system:true, createdAt:new Date().toISOString()
+      });
+      snap = await ref.get();
+    }
+    if(!snap.exists){
+      loginMessage = { type:'error', text:'This account has no profile in the system. Contact IT.' };
+      await auth.signOut(); return;
+    }
+    const profile = { id: snap.id, ...snap.data() };
+    if(profile.status !== 'active'){
+      loginMessage = { type:'error', text:`This account has been ${profile.status}. Contact IT.` };
+      await auth.signOut(); return;
+    }
+    currentUser = profile;
+    startListeners();
+    navigateTo(profile.role);
+  } catch(err){
+    loginMessage = { type:'error', text: friendlyError(err) };
+    await auth.signOut();
+  }
+});
+
+async function handleLogin(){
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const email = usernameToEmail(username);
+  if(!email || !password){ renderLogin({ type:'error', text:'Enter your username (e.g. name@PLANNING) and password.' }); return; }
+  const btn = document.getElementById('loginBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Signing in…'; }
+  try{
+    await auth.signInWithEmailAndPassword(email, password);
+  } catch(err){
+    const badCreds = ['auth/user-not-found','auth/invalid-credential','auth/invalid-login-credentials','auth/wrong-password','auth/invalid-email'].includes(err.code);
+    if(badCreds && email === DEFAULT_ADMIN_EMAIL && password === DEFAULT_ADMIN_PASSWORD){
+      // Default IT manager doesn't exist yet: create it
+      try{ await auth.createUserWithEmailAndPassword(email, password); return; }
+      catch(err2){
+        renderLogin({ type:'error', text: err2.code === 'auth/email-already-in-use' ? 'Incorrect username or password.' : friendlyError(err2) });
+        return;
+      }
+    }
+    renderLogin({ type:'error', text: badCreds ? 'Incorrect username or password.' : friendlyError(err) });
+  }
+}
+async function logout(){
+  userFilterRole = 'all';
+  await auth.signOut();
+}
+
+// ---------- Live data ----------
+function stopListeners(){
+  unsubscribers.forEach(u => u());
+  unsubscribers = [];
+  state.plots = []; state.applications = []; state.activityLog = []; state.users = [];
+}
+function startListeners(){
+  const onErr = err => console.error(err);
+  unsubscribers.push(db.collection('plots').onSnapshot(s => {
+    state.plots = s.docs.map(d => ({ id:d.id, ...d.data() })); scheduleRender();
+  }, onErr));
+  unsubscribers.push(db.collection('applications').onSnapshot(s => {
+    state.applications = s.docs.map(d => ({ id:d.id, ...d.data() })); scheduleRender();
+  }, onErr));
+  unsubscribers.push(db.collection('activityLog').orderBy('ts','desc').limit(200).onSnapshot(s => {
+    state.activityLog = s.docs.map(d => ({ id:d.id, ...d.data() })); scheduleRender();
+  }, onErr));
+  if(currentUser.role === 'it' || currentUser.role === 'auditor'){
+    unsubscribers.push(db.collection('users').onSnapshot(s => {
+      state.users = s.docs.map(d => ({ id:d.id, ...d.data() })); scheduleRender();
+    }, onErr));
+  }
+  // Watch own profile so a suspended/blocked user is signed out straight away
+  unsubscribers.push(db.collection('users').doc(currentUser.id).onSnapshot(s => {
+    if(!s.exists) return;
+    const data = s.data();
+    if(data.status !== 'active'){
+      loginMessage = { type:'error', text:`This account has been ${data.status}. Contact IT.` };
+      auth.signOut();
+    }
+  }, onErr));
+}
+
+// Re-render the current screen when data changes, keeping typed form values
+let renderQueued = false, renderAfterDrag = false;
+function scheduleRender(){
+  if(renderQueued) return;
+  renderQueued = true;
+  requestAnimationFrame(() => {
+    renderQueued = false;
+    if(!currentUser || currentView === 'login' || currentView === 'loading') return;
+    if(dragState){ renderAfterDrag = true; return; }
+    const saved = {};
+    document.querySelectorAll('#app input[id], #app select[id], #app textarea[id]').forEach(el => { if(el.type !== 'file') saved[el.id] = el.value; });
+    const focusedId = document.activeElement && document.activeElement.id;
+    navigateTo(currentView);
+    Object.entries(saved).forEach(([id, v]) => { const el = document.getElementById(id); if(el) el.value = v; });
+    if(pendingRect && currentView === 'lands') showTempShape(pendingRect.x1, pendingRect.y1, pendingRect.x2, pendingRect.y2);
+    if(focusedId){ const f = document.getElementById(focusedId); if(f) f.focus(); }
+  });
+}
+
+// Sequential reference numbers (PLT-000001, APP-000001) kept in meta/counters
+async function nextNumber(field, prefix){
+  const ref = db.collection('meta').doc('counters');
+  const n = await db.runTransaction(async t => {
+    const s = await t.get(ref);
+    const v = ((s.exists && s.data()[field]) || 0) + 1;
+    t.set(ref, { [field]: v }, { merge:true });
+    return v;
+  });
+  return prefix + String(n).padStart(6,'0');
+}
+
+let busy = false;
+async function withBusy(fn){
+  if(busy) return;
+  busy = true;
+  try{ await fn(); }
+  catch(err){ console.error(err); alert(friendlyError(err)); }
+  finally{ busy = false; }
+}
+
 function exportData(){
   const payload = {
+    system: SYSTEM_NAME,
     exportedAt: new Date().toISOString(),
     plots: state.plots,
     applications: state.applications,
@@ -318,36 +498,42 @@ function exportData(){
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'land-registry-data.json';
+  a.download = 'ndola-lms-data.json';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
-function importData(event){
-  const file = event.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try{
-      const data = JSON.parse(reader.result);
-      if(!Array.isArray(data.plots) || !Array.isArray(data.applications) || !Array.isArray(data.users)){
-        throw new Error('Invalid file structure');
-      }
-      state.plots = data.plots;
-      state.applications = data.applications;
-      state.activityLog = Array.isArray(data.activityLog) ? data.activityLog : [];
-      state.users = data.users.length ? data.users : [ DEFAULT_ADMIN ];
-      currentUser = null;
-      userFilterRole = 'all';
-      navigateTo('login');
-      alert('Data imported successfully.');
-    } catch(err){
-      alert("That file doesn't look like a valid Land Registry export.");
-    }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
+
+function openChangePasswordModal(){
+  openModal(`
+    <h2>Change password</h2>
+    <p class="sub">${esc(currentUser.username)}</p>
+    <div class="form-field"><label>Current password</label><input id="cpCurrent" type="password"></div>
+    <div class="form-field"><label>New password</label><input id="cpNew" type="password" placeholder="At least 6 characters"></div>
+    <div class="form-field"><label>Confirm new password</label><input id="cpConfirm" type="password"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="changePassword()">Update password</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+function changePassword(){
+  const cur = document.getElementById('cpCurrent').value;
+  const nw = document.getElementById('cpNew').value;
+  const cf = document.getElementById('cpConfirm').value;
+  if(nw.length < 6){ alert('New password must be at least 6 characters.'); return; }
+  if(nw !== cf){ alert('The new passwords do not match.'); return; }
+  withBusy(async () => {
+    const user = auth.currentUser;
+    const cred = firebase.auth.EmailAuthProvider.credential(user.email, cur);
+    try{ await user.reauthenticateWithCredential(cred); }
+    catch(err){ alert('Current password is incorrect.'); return; }
+    await user.updatePassword(nw);
+    await log(DEPT_META[currentUser.role].label, 'Password changed', currentUser.username);
+    closeModal();
+    alert('Password updated.');
+  });
 }
 
 function fmtK(n){ return 'K ' + Number(n||0).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
@@ -359,87 +545,94 @@ function fmtLogTs(iso){
   const d = new Date(iso);
   return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 }
-function genPlotNumber(){ return 'PLT-' + String(state.plots.length + 1).padStart(6,'0'); }
-function genAppNumber(){ return 'APP-' + String(state.applications.length + 1).padStart(6,'0'); }
-function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 function pill(status){ return `<span class="pill ${status}">${status.charAt(0).toUpperCase()+status.slice(1)}</span>`; }
 function statusColor(status){ return {available:'#2F9E44', pending:'#E8A33D', sold:'#1B4332', rejected:'#C1443C'}[status] || '#888'; }
 function log(dept, action, detail){
-  state.activityLog.unshift({ ts:new Date().toISOString(), dept, action, detail });
+  return db.collection('activityLog').add({
+    ts:new Date().toISOString(), dept, action, detail,
+    by: currentUser ? currentUser.username : null
+  }).catch(err => console.error('Log failed', err));
 }
 function closeModal(){ document.getElementById('modalRoot').innerHTML = ''; }
 function openModal(html){ document.getElementById('modalRoot').innerHTML = `<div class="modal-overlay" onclick="if(event.target===this) closeModal()"><div class="modal-box">${html}</div></div>`; }
 
 function navigateTo(view){
   currentView = view;
-  if(view === 'login') renderLogin();
+  if(view === 'loading') renderLoading();
+  else if(view === 'login') renderLogin();
   else if(view === 'lands') renderLands();
   else if(view === 'legal') renderLegal();
   else if(view === 'finance') renderFinance();
   else if(view === 'it') renderIT();
   else if(view === 'auditor') renderAuditor();
 }
-function logout(){
-  currentUser = null;
-  userFilterRole = 'all';
-  navigateTo('login');
+function renderLoading(){
+  document.getElementById('app').innerHTML = `<div class="loading-screen">Connecting to ${SYSTEM_NAME}…</div>`;
 }
 
 function shell(contentHtml, dockHtml){
   const meta = DEPT_META[currentUser.role];
   const hasDock = !!dockHtml;
+  const initials = (currentUser.fullName || currentUser.username).split(/\s+/).map(w => w[0]).join('').slice(0,2).toUpperCase();
   document.getElementById('app').innerHTML = `
     <div class="shell ${hasDock ? 'with-dock' : ''}">
-      <aside class="sidebar" style="background:${meta.color}">
-        <div class="brand">LAND REGISTRY · DEMO</div>
-        <div class="dept-title">
-          <span class="code lg" style="color:#fff; border-color:rgba(255,255,255,0.5)">${meta.code}</span>
-          <h2>${meta.label}</h2>
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="emblem">NLMS</div>
+          <div class="name">Ndola Land<br>Management System</div>
         </div>
-        <p class="role-note">Logged in as <strong>${currentUser.username}</strong></p>
-        <nav><div class="item">Dashboard</div></nav>
-        <button class="switch-btn" onclick="logout()">Log out</button>
+        <div class="section-label">${meta.label} department</div>
+        <nav>
+          <div class="item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+            Dashboard
+          </div>
+        </nav>
+        <div class="user-card">
+          <div class="user-row">
+            <div class="avatar">${esc(initials)}</div>
+            <div style="min-width:0;">
+              <div class="u">${esc(currentUser.username)}</div>
+              <div class="r">${meta.label}</div>
+            </div>
+          </div>
+          <div class="side-actions">
+            <button class="side-btn" onclick="openChangePasswordModal()">Password</button>
+            <button class="switch-btn" onclick="logout()">Log out</button>
+          </div>
+        </div>
       </aside>
       <main class="main">${contentHtml}</main>
       ${hasDock ? `<aside class="right-dock">${dockHtml}</aside>` : ''}
     </div>`;
 }
 
-function renderLogin(error){
+function renderLogin(msg){
+  msg = msg || loginMessage;
+  loginMessage = null;
   document.getElementById('app').innerHTML = `
     <div class="login-page">
-      <div class="login-card">
-        <div class="login-logo">
-          <div class="mark">LR</div>
-          <div class="word">Land Registry</div>
+      <div class="login-brand">
+        <div class="top"><div class="emblem">NLMS</div><span>Ndola Land Management System</span></div>
+        <div>
+          <h1>Land records, plot sales and approvals in one place.</h1>
+          <p class="tag">Planning, Legal, Finance, IT and Audit working from the same up-to-date register.</p>
         </div>
-        <div class="login-panel">
-          <h2>Sign in</h2>
-          <p class="sub">Access your department dashboard</p>
-          ${error ? `<p class="login-error">${error}</p>` : ''}
-          <div class="form-field"><label>Username</label><input id="loginUsername" type="text" placeholder="e.g. 482@PLANNING" autocomplete="username" onkeydown="if(event.key==='Enter') handleLogin()"></div>
-          <div class="form-field"><label>Password</label><input id="loginPassword" type="password" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter') handleLogin()"></div>
-          <button class="btn btn-primary btn-full" onclick="handleLogin()">Log in</button>
+        <div class="foot">© ${new Date().getFullYear()} Ndola Land Management System</div>
+      </div>
+      <div class="login-form-side">
+        <div class="login-card">
+          <div class="login-panel">
+            <h2>Sign in</h2>
+            <p class="sub">Enter your credentials to access your dashboard.</p>
+            ${msg ? `<p class="${msg.type === 'info' ? 'login-info' : 'login-error'}">${esc(msg.text)}</p>` : ''}
+            <div class="form-field"><label>Username</label><input id="loginUsername" type="text" placeholder="name@DEPARTMENT" autocomplete="username" onkeydown="if(event.key==='Enter') handleLogin()"></div>
+            <div class="form-field"><label>Password</label><input id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter') handleLogin()"></div>
+            <button id="loginBtn" class="btn btn-primary btn-full" onclick="handleLogin()">Sign in</button>
+          </div>
         </div>
-        <div class="login-hint">First time here? Sign in with the default IT account — <strong>admin@IT</strong> / <strong>admin</strong> — to start creating other users.</div>
-        <div class="reset-row">
-          <button class="text-link" onclick="exportData()">Export data (.json)</button>
-          <label class="text-link" style="cursor:pointer;">Import data (.json)<input type="file" accept="application/json" style="display:none;" onchange="importData(event)"></label>
-          <button class="text-link" onclick="resetDemoData()">Reset demo data</button>
-        </div>
-        <p class="disclaimer">Demonstration system — data persists in this browser tab, or can be saved to and loaded from a JSON file.</p>
       </div>
     </div>`;
-}
-function handleLogin(){
-  const username = document.getElementById('loginUsername').value.trim();
-  const password = document.getElementById('loginPassword').value;
-  const user = state.users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
-  if(!user){ renderLogin('Incorrect username or password.'); return; }
-  if(user.status === 'suspended'){ renderLogin('This account has been suspended. Contact IT.'); return; }
-  if(user.status === 'blocked'){ renderLogin('This account has been blocked. Contact IT.'); return; }
-  currentUser = user;
-  navigateTo(user.role);
 }
 
 function pointToCoords(xPct, yPct){
@@ -481,7 +674,7 @@ function landsListHtml(){
     <div class="plot-list-item">
       <div>
         <span class="code" style="color:var(--primary)">${p.plotNumber}</span>
-        <div class="meta">${p.location} · E${p.easting}m N${p.northing}m · ${p.sizeSqm} sqm · ${fmtK(p.value)}</div>
+        <div class="meta">${esc(p.location)} · E${p.easting}m N${p.northing}m · ${p.sizeSqm} sqm · ${fmtK(p.value)}</div>
       </div>
       ${pill(p.status)}
     </div>`).join('');
@@ -491,7 +684,7 @@ function openPlotModal(id){
   if(!p) return;
   openModal(`
     <div class="code lg" style="color:${statusColor(p.status)}; border-color:${statusColor(p.status)}; margin-bottom:12px;">${p.plotNumber}</div>
-    <h2>${p.location}</h2>
+    <h2>${esc(p.location)}</h2>
     <p class="sub">${p.sizeSqm} sqm · ${fmtK(p.value)} · E${p.easting}m N${p.northing}m · cut out ${fmtDate(p.createdAt)}</p>
     <div style="margin-bottom:18px;">${pill(p.status)}</div>
     <div class="btn-row"><button class="btn btn-ghost" onclick="closeModal()">Close</button></div>
@@ -688,6 +881,7 @@ function onMapMouseUp(){
   showTempShape(x1, y1, x2, y2);
   fillFormFromRect(pendingRect);
   refreshSizeAndValue();
+  if(renderAfterDrag){ renderAfterDrag = false; scheduleRender(); }
 }
 function updatePlotPreview(){
   const easting = parseFloat(document.getElementById('coordEasting').value);
@@ -719,17 +913,18 @@ function confirmNewPlot(){
   if(!pendingRect){ alert('Drag on the map to highlight this plot\'s boundary.'); return; }
   const size = rectSizeSqm(pendingRect);
   const value = size * LAND_RATE_PER_SQM;
-  const plot = {
-    id: uid(), plotNumber: genPlotNumber(), easting, northing,
-    x1: pendingRect.x1, y1: pendingRect.y1, x2: pendingRect.x2, y2: pendingRect.y2,
-    sizeSqm: size, value, location, status:'available', createdAt: new Date().toISOString()
-  };
-  state.plots.push(plot);
-  log('Planning', 'Plot created', `${plot.plotNumber} · E${easting}m N${northing}m · ${size} sqm · ${fmtK(value)} · ${location}`);
-  clearNewPlotForm();
-  document.getElementById('landsStats').innerHTML = landsStatsHtml();
-  document.getElementById('landsList').innerHTML = landsListHtml();
-  renderPlotShapesOnMap();
+  const rect = { ...pendingRect };
+  withBusy(async () => {
+    const plotNumber = await nextNumber('plots', 'PLT-');
+    await db.collection('plots').add({
+      plotNumber, easting, northing,
+      x1: rect.x1, y1: rect.y1, x2: rect.x2, y2: rect.y2,
+      sizeSqm: size, value, location, status:'available',
+      createdAt: new Date().toISOString(), createdBy: currentUser.username
+    });
+    await log('Planning', 'Plot created', `${plotNumber} · E${easting}m N${northing}m · ${size} sqm · ${fmtK(value)} · ${location}`);
+    clearNewPlotForm();
+  });
 }
 
 function renderLegal(){
@@ -758,7 +953,7 @@ function renderLegal(){
                 <span class="code" style="color:var(--primary)">${p.plotNumber}</span>
                 ${pill(p.status)}
               </div>
-              <div class="location">${p.location}</div>
+              <div class="location">${esc(p.location)}</div>
               <div class="size">E${p.easting}m N${p.northing}m · ${p.sizeSqm} sqm · ${fmtK(p.value)}</div>
               <button class="btn btn-accent btn-sm" onclick="openApplyModal('${p.id}')">Apply to sell</button>
             </div>`).join('')}
@@ -775,7 +970,7 @@ function renderLegal(){
               <tr>
                 <td><span class="code">${a.appNumber}</span></td>
                 <td><span class="code" style="color:var(--primary)">${a.plotNumber}</span></td>
-                <td>${a.buyerName}</td>
+                <td>${esc(a.buyerName)}</td>
                 <td>${fmtK(a.amount)}</td>
                 <td>${pill(a.status)}</td>
                 <td>${fmtDate(a.submittedAt)}</td>
@@ -790,7 +985,7 @@ function openApplyModal(plotId){
   if(!p) return;
   openModal(`
     <h2>Apply to sell ${p.plotNumber}</h2>
-    <p class="sub">${p.location} · ${p.sizeSqm} sqm · ${fmtK(p.value)}</p>
+    <p class="sub">${esc(p.location)} · ${p.sizeSqm} sqm · ${fmtK(p.value)}</p>
     <div class="form-field"><label>Buyer full name</label><input id="buyerName" type="text" placeholder="e.g. Chanda Mwansa"></div>
     <div class="form-field"><label>Buyer NRC / ID number</label><input id="buyerId" type="text" placeholder="e.g. 123456/78/1"></div>
     <div class="form-field"><label>Buyer phone</label><input id="buyerPhone" type="text" placeholder="e.g. +260 97 123 4567"></div>
@@ -812,15 +1007,23 @@ function submitApplication(plotId){
     alert('Enter the buyer\'s name, ID number, and a valid amount paid.');
     return;
   }
-  const app = {
-    id: uid(), appNumber: genAppNumber(), plotId: p.id, plotNumber: p.plotNumber,
-    buyerName, buyerId, buyerPhone, amount, status:'pending', submittedAt: new Date().toISOString(), decidedAt:null
-  };
-  state.applications.push(app);
-  p.status = 'pending';
-  log('Legal', 'Application submitted', `${p.plotNumber} · ${buyerName} · ${fmtK(amount)}`);
-  closeModal();
-  renderLegal();
+  withBusy(async () => {
+    const appNumber = await nextNumber('applications', 'APP-');
+    const plotRef = db.collection('plots').doc(p.id);
+    const appRef = db.collection('applications').doc();
+    await db.runTransaction(async t => {
+      const ps = await t.get(plotRef);
+      if(!ps.exists || ps.data().status !== 'available') throw new Error('This plot is no longer available.');
+      t.update(plotRef, { status:'pending' });
+      t.set(appRef, {
+        appNumber, plotId: p.id, plotNumber: p.plotNumber,
+        buyerName, buyerId, buyerPhone, amount, status:'pending',
+        submittedAt: new Date().toISOString(), submittedBy: currentUser.username, decidedAt:null
+      });
+    });
+    await log('Legal', 'Application submitted', `${p.plotNumber} · ${buyerName} · ${fmtK(amount)}`);
+    closeModal();
+  });
 }
 
 function renderFinance(){
@@ -849,7 +1052,7 @@ function renderFinance(){
               <tr>
                 <td><span class="code">${a.appNumber}</span></td>
                 <td><span class="code" style="color:var(--primary)">${a.plotNumber}</span></td>
-                <td>${a.buyerName}<div style="font-size:11.5px;color:var(--ink-muted)">${a.buyerId}</div></td>
+                <td>${esc(a.buyerName)}<div style="font-size:11.5px;color:var(--ink-muted)">${esc(a.buyerId)}</div></td>
                 <td>${fmtK(a.amount)}</td>
                 <td>${fmtDate(a.submittedAt)}</td>
                 <td>
@@ -873,7 +1076,7 @@ function renderFinance(){
               <tr>
                 <td><span class="code">${a.appNumber}</span></td>
                 <td><span class="code" style="color:var(--primary)">${a.plotNumber}</span></td>
-                <td>${a.buyerName}</td>
+                <td>${esc(a.buyerName)}</td>
                 <td>${fmtK(a.amount)}</td>
                 <td>${pill(a.status)}</td>
                 <td>${fmtDate(a.decidedAt)}</td>
@@ -890,12 +1093,17 @@ function decide(appId, decision){
     ? `Approve the sale of ${app.plotNumber} to ${app.buyerName} for ${fmtK(app.amount)}? The plot will be marked sold.`
     : `Reject this application for ${app.plotNumber}? The plot will become available again.`;
   if(!confirm(confirmMsg)) return;
-  app.status = decision;
-  app.decidedAt = new Date().toISOString();
-  const plot = state.plots.find(p => p.id === app.plotId);
-  if(plot) plot.status = decision === 'approved' ? 'sold' : 'available';
-  log('Finance', decision === 'approved' ? 'Application approved' : 'Application rejected', `${app.plotNumber} · ${app.buyerName} · ${fmtK(app.amount)}`);
-  renderFinance();
+  withBusy(async () => {
+    const appRef = db.collection('applications').doc(app.id);
+    const plotRef = db.collection('plots').doc(app.plotId);
+    await db.runTransaction(async t => {
+      const as = await t.get(appRef);
+      if(!as.exists || as.data().status !== 'pending') throw new Error('This application has already been decided.');
+      t.update(appRef, { status: decision, decidedAt: new Date().toISOString(), decidedBy: currentUser.username });
+      t.update(plotRef, { status: decision === 'approved' ? 'sold' : 'available' });
+    });
+    await log('Finance', decision === 'approved' ? 'Application approved' : 'Application rejected', `${app.plotNumber} · ${app.buyerName} · ${fmtK(app.amount)}`);
+  });
 }
 
 function userStatusPill(status){
@@ -933,7 +1141,7 @@ function usersTableHtml(list){
       <tbody>
         ${sorted.map(u => `
           <tr style="cursor:pointer;" onclick="openUserModal('${u.id}')">
-            <td><span class="code" style="color:${DEPT_META[u.role].color}; border-color:${DEPT_META[u.role].color};">${DEPT_META[u.role].code}</span> ${u.username}</td>
+            <td style="font-weight:500;">${esc(u.username)}</td>
             <td>${DEPT_META[u.role].label}</td>
             <td>${userStatusPill(u.status)}</td>
           </tr>`).join('')}
@@ -945,8 +1153,8 @@ function openUserModal(id){
   if(!u) return;
   openModal(`
     <div class="code lg" style="color:${DEPT_META[u.role].color}; border-color:${DEPT_META[u.role].color}; margin-bottom:12px;">${DEPT_META[u.role].code}</div>
-    <h2>${u.username}</h2>
-    <p class="sub">${u.fullName || '—'}${u.nrc ? ' · ' + u.nrc : ''}</p>
+    <h2>${esc(u.username)}</h2>
+    <p class="sub">${esc(u.fullName || '—')}${u.nrc ? ' · ' + esc(u.nrc) : ''}</p>
     <div style="margin-bottom:18px; display:flex; align-items:center; gap:10px;">
       ${userStatusPill(u.status)}
       <span style="font-size:12.5px; color:var(--ink-muted);">${DEPT_META[u.role].label} · created ${fmtDate(u.createdAt)}</span>
@@ -981,39 +1189,54 @@ function createUser(){
   const role = document.getElementById('newRole').value;
   if(!fullName){ alert("Enter the user's full name."); return; }
   if(!nrc){ alert("Enter the user's NRC number."); return; }
-  if(!password){ alert('Set a password for this account.'); return; }
+  if(!password || password.length < 6){ alert('Set a password of at least 6 characters.'); return; }
   const username = genUsername(role, fullName);
-  state.users.push({ id: uid(), username, password, role, fullName, nrc, status:'active', system:false, createdAt: new Date().toISOString() });
-  log('IT', 'User created', `${username} · ${fullName} · ${DEPT_META[role].label}`);
-  document.getElementById('newFullName').value = '';
-  document.getElementById('newNrc').value = '';
-  document.getElementById('newPassword').value = '';
-  document.getElementById('newUsername').value = '';
-  renderIT();
+  withBusy(async () => {
+    // A second Firebase app creates the account so the IT manager stays signed in
+    const secondary = firebase.apps.find(a => a.name === 'secondary') || firebase.initializeApp(firebaseConfig, 'secondary');
+    const cred = await secondary.auth().createUserWithEmailAndPassword(usernameToEmail(username), password);
+    await secondary.auth().signOut();
+    await db.collection('users').doc(cred.user.uid).set({
+      username, role, fullName, nrc, status:'active', system:false,
+      createdAt: new Date().toISOString(), createdBy: currentUser.username
+    });
+    await log('IT', 'User created', `${username} · ${fullName} · ${DEPT_META[role].label}`);
+    document.getElementById('newFullName').value = '';
+    document.getElementById('newNrc').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('newUsername').value = '';
+    alert(`User created.\n\nUsername: ${username}\nPassword: the one you set`);
+  });
 }
 function suspendUser(id){
   const u = state.users.find(x => x.id === id);
   if(!u || u.system) return;
-  u.status = 'suspended';
-  log('IT', 'User suspended', u.username);
-  closeModal();
-  renderIT();
+  if(u.id === currentUser.id){ alert('You cannot change your own account status.'); return; }
+  withBusy(async () => {
+    await db.collection('users').doc(id).update({ status:'suspended' });
+    await log('IT', 'User suspended', u.username);
+    closeModal();
+  });
 }
 function blockUser(id){
   const u = state.users.find(x => x.id === id);
   if(!u || u.system) return;
-  u.status = 'blocked';
-  log('IT', 'User blocked', u.username);
-  closeModal();
-  renderIT();
+  if(u.id === currentUser.id){ alert('You cannot change your own account status.'); return; }
+  withBusy(async () => {
+    await db.collection('users').doc(id).update({ status:'blocked' });
+    await log('IT', 'User blocked', u.username);
+    closeModal();
+  });
 }
 function reactivateUser(id){
   const u = state.users.find(x => x.id === id);
   if(!u || u.system) return;
-  u.status = 'active';
-  log('IT', 'User reactivated', u.username);
-  closeModal();
-  renderIT();
+  if(u.id === currentUser.id){ alert('You cannot change your own account status.'); return; }
+  withBusy(async () => {
+    await db.collection('users').doc(id).update({ status:'active' });
+    await log('IT', 'User reactivated', u.username);
+    closeModal();
+  });
 }
 
 function renderIT(){
@@ -1034,7 +1257,7 @@ function renderIT(){
   `;
 
   shell(`
-    <div class="topbar"><h1>IT Dashboard</h1><span class="timestamp">${fmtDate(new Date().toISOString())}</span></div>
+    <div class="topbar"><h1>IT Dashboard</h1><div style="display:flex; align-items:center; gap:12px;"><button class="btn btn-ghost btn-sm" onclick="exportData()">Export backup (.json)</button><span class="timestamp">${fmtDate(new Date().toISOString())}</span></div></div>
     <div class="stats-row">
       <div class="stat-card"><div class="n">${totalPlots}</div><div class="l">Total plots</div></div>
       <div class="stat-card"><div class="n">${totalApps}</div><div class="l">Total applications</div></div>
@@ -1050,7 +1273,7 @@ function renderIT(){
             <div class="log-ts">${fmtLogTs(item.ts)}</div>
             <div class="log-body">
               <div class="action">${item.dept} · ${item.action}</div>
-              <div class="detail">${item.detail}</div>
+              <div class="detail">${esc(item.detail)}${item.by ? ' · by ' + esc(item.by) : ''}</div>
             </div>
           </div>`).join('')}
       </div>
@@ -1090,7 +1313,7 @@ function auditorApplicationsHtml(){
           <tr>
             <td><span class="code">${a.appNumber}</span></td>
             <td><span class="code" style="color:var(--primary)">${a.plotNumber}</span></td>
-            <td>${a.buyerName}</td>
+            <td>${esc(a.buyerName)}</td>
             <td>${fmtK(a.amount)}</td>
             <td>${pill(a.status)}</td>
             <td>${fmtDate(a.submittedAt)}</td>
@@ -1105,7 +1328,7 @@ function auditorLogHtml(){
       <div class="log-ts">${fmtLogTs(item.ts)}</div>
       <div class="log-body">
         <div class="action">${item.dept} · ${item.action}</div>
-        <div class="detail">${item.detail}</div>
+        <div class="detail">${esc(item.detail)}${item.by ? ' · by ' + esc(item.by) : ''}</div>
       </div>
     </div>`).join('');
 }
@@ -1147,7 +1370,7 @@ function renderAuditor(){
   renderPlotShapesOnMap();
 }
 
-navigateTo('login');
+navigateTo('loading');
 </script>
 </body>
 </html>
