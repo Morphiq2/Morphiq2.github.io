@@ -328,6 +328,46 @@
   .detail-list{display:grid; grid-template-columns:120px 1fr; gap:10px 12px; font-size:13.5px; margin-bottom:6px;}
   .detail-list dt{color:var(--ink-muted);} .detail-list dd{margin:0; font-weight:500;}
 
+  /* Department list (one card per department) */
+  .dept-list{display:flex; flex-direction:column; gap:12px; max-width:880px;}
+  .dept-row{
+    display:flex; align-items:center; gap:16px; width:100%; text-align:left;
+    background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow);
+    padding:18px 20px; font:inherit; color:inherit;
+    transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+  }
+  .dept-row:hover{border-color:var(--border-strong); box-shadow:0 4px 12px rgba(16,24,40,0.08); transform:translateY(-1px);}
+  .dept-row .dept-icon{width:44px; height:44px; font-size:13px;}
+  .dept-row .txt{flex:1; min-width:0;}
+  .dept-row .nm{font-weight:600; font-size:15px;}
+  .dept-row .ds{font-size:13px; color:var(--ink-muted); margin-top:2px;}
+  .dept-row .chev{color:var(--ink-soft); flex-shrink:0;}
+
+  /* Presence */
+  .presence{display:inline-flex; align-items:center; gap:7px; font-size:13px; white-space:nowrap;}
+  .presence .dot{width:8px; height:8px; border-radius:50%; background:#D0D5DD; flex-shrink:0;}
+  .presence.online{color:var(--available); font-weight:500;}
+  .presence.online .dot{background:#12B76A; box-shadow:0 0 0 3px rgba(18,183,106,0.18);}
+  .presence.away{color:var(--ink-muted);}
+  .user-avatar{position:relative;}
+  .user-avatar .live{position:absolute; right:-1px; bottom:-1px; width:10px; height:10px; border-radius:50%; background:#12B76A; border:2px solid #fff;}
+
+  /* Activity log with filters */
+  .log-filters{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  .log-filters .filter-select{min-width:220px; padding:8px 10px;}
+  .log-count{font-size:12.5px; color:var(--ink-muted); margin:-4px 0 6px;}
+  .log-row{display:grid; grid-template-columns:110px 1fr auto; gap:16px; align-items:center; padding:12px 0; border-bottom:1px solid var(--border);}
+  .log-row:last-child{border-bottom:none;}
+  .log-row .ts{font-size:12px; color:var(--ink-muted); font-variant-numeric:tabular-nums;}
+  .log-row .what{min-width:0;}
+  .log-row .what .a{font-size:13.5px; font-weight:500;}
+  .log-row .what .a .dept{display:inline-block; font-size:11px; font-weight:500; color:var(--ink-muted); background:#F3F4F6; border-radius:4px; padding:1px 6px; margin-right:6px; vertical-align:1px;}
+  .log-row .what .d{font-size:12.5px; color:var(--ink-muted); margin-top:2px; overflow-wrap:anywhere;}
+  .log-row .by{display:flex; align-items:center; gap:8px; font-size:12.5px; color:#374151; white-space:nowrap;}
+  .log-row .by .user-avatar{width:26px; height:26px; font-size:10px;}
+  .log-row .by.system{color:var(--ink-soft);}
+  @media (max-width:760px){ .log-row{grid-template-columns:1fr;} }
+
   .login-error{color:var(--rejected); background:#FEF3F2; border:1px solid #FECDCA; border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:18px;}
   .login-info{color:var(--primary); background:var(--primary-tint); border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:18px;}
   .loading-screen{min-height:100vh; display:flex; align-items:center; justify-content:center; color:var(--ink-muted); font-size:14px;}
@@ -392,6 +432,8 @@ let unsubscribers = [];
 let recordLogin = false;   // true only for a real sign-in (not a page refresh)
 let selectedDept = null;
 let deptSearch = '';
+let logFilterUser = 'all';
+let logSearch = '';
 let loginMessage = null; // { type:'error'|'info', text }
 
 const DEPT_META = {
@@ -453,6 +495,7 @@ auth.onAuthStateChanged(async (fbUser) => {
     }
     currentUser = profile;
     startListeners();
+    startPresence();
     navigateTo(profile.role);
   } catch(err){
     loginMessage = { type:'error', text: friendlyError(err) };
@@ -486,11 +529,53 @@ async function handleLogin(){
 }
 async function logout(){
   userFilterRole = 'all';
+  logFilterUser = 'all'; logSearch = '';
+  if(currentUser){
+    try{ await db.collection('users').doc(currentUser.id).update({ signedOutAt: new Date().toISOString() }); }
+    catch(err){ console.error(err); }
+  }
   await auth.signOut();
 }
 
 // ---------- Live data ----------
+// ---------- Online presence ----------
+const ONLINE_WINDOW_MS = 2.5 * 60 * 1000;   // seen within the last 2.5 minutes = online
+let presenceTimer = null, refreshTimer = null;
+function touchPresence(){
+  if(!currentUser) return;
+  db.collection('users').doc(currentUser.id).update({ lastActiveAt: new Date().toISOString() })
+    .catch(err => console.error('Presence not saved', err));
+}
+function startPresence(){
+  touchPresence();
+  presenceTimer = setInterval(touchPresence, 60 * 1000);
+  // keep "Online / Last active" labels fresh on IT screens
+  refreshTimer = setInterval(() => {
+    if(currentView === 'it' || currentView === 'it-departments' || currentView === 'it-dept') scheduleRender();
+  }, 30 * 1000);
+}
+function stopPresence(){
+  clearInterval(presenceTimer); clearInterval(refreshTimer);
+  presenceTimer = refreshTimer = null;
+}
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') touchPresence(); });
+function isOnline(u){
+  if(!u || !u.lastActiveAt || u.status !== 'active') return false;
+  if(u.signedOutAt && u.signedOutAt >= u.lastActiveAt) return false;
+  return Date.now() - new Date(u.lastActiveAt).getTime() < ONLINE_WINDOW_MS;
+}
+function presenceHtml(u){
+  if(isOnline(u)) return `<span class="presence online"><span class="dot"></span>Online</span>`;
+  const last = [u.lastActiveAt, u.signedOutAt].filter(Boolean).sort().pop();
+  if(!last) return `<span class="presence away"><span class="dot"></span>Never active</span>`;
+  return `<span class="presence away" title="${fmtDate(last)}"><span class="dot"></span>Active ${fmtRelative(last).toLowerCase()}</span>`;
+}
+function avatarHtml(u){
+  return `<div class="user-avatar">${esc(initialsOf(u))}${isOnline(u) ? '<span class="live"></span>' : ''}</div>`;
+}
+
 function stopListeners(){
+  stopPresence();
   unsubscribers.forEach(u => u());
   unsubscribers = [];
   state.plots = []; state.applications = []; state.activityLog = []; state.users = [];
@@ -503,7 +588,7 @@ function startListeners(){
   unsubscribers.push(db.collection('applications').onSnapshot(s => {
     state.applications = s.docs.map(d => ({ id:d.id, ...d.data() })); scheduleRender();
   }, onErr));
-  unsubscribers.push(db.collection('activityLog').orderBy('ts','desc').limit(200).onSnapshot(s => {
+  unsubscribers.push(db.collection('activityLog').orderBy('ts','desc').limit(500).onSnapshot(s => {
     state.activityLog = s.docs.map(d => ({ id:d.id, ...d.data() })); scheduleRender();
   }, onErr));
   if(currentUser.role === 'it' || currentUser.role === 'auditor'){
@@ -634,7 +719,7 @@ const ICON_DEPT = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" s
 function navItemsHtml(){
   const dash = currentUser.role;
   const items = [{ view: dash, label:'Dashboard', icon: ICON_DASH }];
-  if(currentUser.role === 'it') items.push({ view:'it-departments', label:'Departments', icon: ICON_DEPT, count: Object.keys(DEPT_META).length });
+  if(currentUser.role === 'it') items.push({ view:'it-departments', label:'Departments', icon: ICON_DEPT });
   const activeView = currentView === 'it-dept' ? 'it-departments' : currentView;
   return items.map(i => `<button class="item ${activeView === i.view ? 'active' : ''}" onclick="${i.view === 'it-departments' ? 'openDepartments()' : `navigateTo('${i.view}')`}">${i.icon}${i.label}${i.count ? `<span class="count">${i.count}</span>` : ''}</button>`).join('');
 }
@@ -1221,13 +1306,14 @@ function openUserModal(id){
   const m = DEPT_META[u.role];
   openModal(`
     <div class="user-cell" style="margin-bottom:18px;">
-      <div class="user-avatar" style="width:44px;height:44px;font-size:14px;">${esc(initialsOf(u))}</div>
+      <div class="user-avatar" style="width:44px;height:44px;font-size:14px;">${esc(initialsOf(u))}${isOnline(u) ? '<span class="live"></span>' : ''}</div>
       <div><h2 style="margin:0;">${esc(u.fullName || u.username)}</h2><div class="muted-sm">${esc(u.username)}</div></div>
       <div style="margin-left:auto;">${userStatusPill(u.status)}</div>
     </div>
     <dl class="detail-list">
       <dt>Department</dt><dd>${m.label}</dd>
       <dt>NRC number</dt><dd>${esc(u.nrc || '—')}</dd>
+      <dt>Activity</dt><dd>${presenceHtml(u)}</dd>
       <dt>Last login</dt><dd>${u.lastLoginAt ? `${fmtRelative(u.lastLoginAt)} <span class="muted-sm">· ${fmtDate(u.lastLoginAt)}</span>` : 'Never'}</dd>
       <dt>Created</dt><dd>${fmtDate(u.createdAt)}${u.createdBy ? ` <span class="muted-sm">· by ${esc(u.createdBy)}</span>` : ''}</dd>
     </dl>
@@ -1264,7 +1350,8 @@ function deptCounts(role){
     total: list.length,
     active: list.filter(u => u.status === 'active').length,
     suspended: list.filter(u => u.status === 'suspended').length,
-    blocked: list.filter(u => u.status === 'blocked').length
+    blocked: list.filter(u => u.status === 'blocked').length,
+    online: list.filter(isOnline).length
   };
 }
 function openDepartments(){ selectedDept = null; deptSearch = ''; navigateTo('it-departments'); }
@@ -1273,28 +1360,16 @@ function openDepartment(role){ selectedDept = role; deptSearch = ''; navigateTo(
 function renderDepartments(){
   shell(`
     <div class="topbar">
-      <div><h1>Departments</h1><p class="page-sub">Select a department to view and manage its staff accounts.</p></div>
+      <div><h1>Departments</h1><p class="page-sub">Select a department to see its staff.</p></div>
       <span class="timestamp">${fmtDate(new Date().toISOString())}</span>
     </div>
-    <div class="dept-grid">
-      ${Object.keys(DEPT_META).map(role => {
-        const m = DEPT_META[role], c = deptCounts(role);
-        return `
-        <button class="dept-card" onclick="openDepartment('${role}')">
-          <div class="head">
-            ${deptIcon(role)}
-            <div><div class="title">${m.label}</div><div class="muted-sm">${c.total} user${c.total === 1 ? '' : 's'}</div></div>
-            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-          </div>
-          <div class="desc">${m.desc}</div>
-          <div class="metrics">
-            <div><div class="v">${c.total}</div><div class="k">Users</div></div>
-            <div><div class="v" style="color:var(--available)">${c.active}</div><div class="k">Active</div></div>
-            <div><div class="v" style="color:var(--pending)">${c.suspended}</div><div class="k">Suspended</div></div>
-            <div><div class="v" style="color:var(--rejected)">${c.blocked}</div><div class="k">Blocked</div></div>
-          </div>
-        </button>`;
-      }).join('')}
+    <div class="dept-list">
+      ${Object.keys(DEPT_META).map(role => `
+        <button class="dept-row" onclick="openDepartment('${role}')">
+          ${deptIcon(role)}
+          <div class="txt"><div class="nm">${DEPT_META[role].label}</div><div class="ds">${DEPT_META[role].desc}</div></div>
+          <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>`).join('')}
     </div>
   `);
 }
@@ -1305,21 +1380,21 @@ function deptUsersTableHtml(){
   const list = state.users
     .filter(u => u.role === selectedDept)
     .filter(u => !q || [u.fullName, u.username, u.nrc].some(v => (v || '').toLowerCase().includes(q)))
-    .sort((a,b) => (b.system ? 1 : 0) - (a.system ? 1 : 0) || (a.fullName || a.username).localeCompare(b.fullName || b.username));
+    .sort((a,b) => (isOnline(b) - isOnline(a)) || (a.fullName || a.username).localeCompare(b.fullName || b.username));
   if(list.length === 0){
     return `<div class="empty-note">${q ? 'No users match your search.' : `No users in ${DEPT_META[selectedDept].label} yet. Add the first one using the form.`}</div>`;
   }
   return `
     <div class="table-wrap"><table>
-      <thead><tr><th>User</th><th>NRC number</th><th>Status</th><th>Last login</th><th>Created</th></tr></thead>
+      <thead><tr><th>User</th><th>NRC number</th><th>Account</th><th>Activity</th><th>Last login</th></tr></thead>
       <tbody>
         ${list.map(u => `
           <tr style="cursor:pointer;" onclick="openUserModal('${u.id}')">
-            <td><div class="user-cell"><div class="user-avatar">${esc(initialsOf(u))}</div><div><div class="nm">${esc(u.fullName || '—')}</div><div class="un">${esc(u.username)}</div></div></div></td>
+            <td><div class="user-cell">${avatarHtml(u)}<div><div class="nm">${esc(u.fullName || '—')}</div><div class="un">${esc(u.username)}</div></div></div></td>
             <td>${esc(u.nrc || '—')}</td>
             <td>${userStatusPill(u.status)}</td>
+            <td>${presenceHtml(u)}</td>
             <td>${u.lastLoginAt ? `<div>${fmtRelative(u.lastLoginAt)}</div><div class="muted-sm">${fmtDate(u.lastLoginAt)}</div>` : '<span class="muted-sm">Never</span>'}</td>
-            <td><div>${new Date(u.createdAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</div>${u.createdBy ? `<div class="muted-sm">by ${esc(u.createdBy)}</div>` : ''}</td>
           </tr>`).join('')}
       </tbody>
     </table></div>`;
@@ -1342,7 +1417,8 @@ function renderDepartmentDetail(){
     </div>
     <div class="stats-row">
       <div class="stat-card"><div class="n">${c.total}</div><div class="l">Total users</div></div>
-      <div class="stat-card"><div class="n" style="color:var(--available)">${c.active}</div><div class="l">Active</div></div>
+      <div class="stat-card"><div class="n">${c.active}</div><div class="l">Active accounts</div></div>
+      <div class="stat-card"><div class="n" style="color:var(--available)">${c.online}</div><div class="l">Online now</div></div>
       <div class="stat-card"><div class="n" style="color:var(--pending)">${c.suspended}</div><div class="l">Suspended</div></div>
       <div class="stat-card"><div class="n" style="color:var(--rejected)">${c.blocked}</div><div class="l">Blocked</div></div>
     </div>
@@ -1450,31 +1526,17 @@ function renderIT(){
   const totalApps = state.applications.length;
   const totalUsers = state.users.length;
   const activeUsers = state.users.filter(u => u.status === 'active').length;
-  const recentLog = state.activityLog.slice(0, 40);
-
-
+  const onlineUsers = state.users.filter(isOnline).length;
   shell(`
     <div class="topbar"><h1>IT Dashboard</h1><span class="timestamp">${fmtDate(new Date().toISOString())}</span></div>
     <div class="stats-row">
       <div class="stat-card"><div class="n">${totalPlots}</div><div class="l">Total plots</div></div>
       <div class="stat-card"><div class="n">${totalApps}</div><div class="l">Total applications</div></div>
       <div class="stat-card"><div class="n">${totalUsers}</div><div class="l">Total users</div></div>
-      <div class="stat-card"><div class="n" style="color:var(--available)">${activeUsers}</div><div class="l">Active users</div></div>
+      <div class="stat-card"><div class="n">${activeUsers}</div><div class="l">Active accounts</div></div>
+      <div class="stat-card"><div class="n" style="color:var(--available)">${onlineUsers}</div><div class="l">Online now</div></div>
     </div>
-
-    <div>
-      <div class="panel">
-        <div class="panel-head"><h2>Activity log</h2><span class="hint">Most recent first</span></div>
-        ${recentLog.length === 0 ? `<div class="empty-note">No activity recorded yet.</div>` : recentLog.map(item => `
-          <div class="log-item">
-            <div class="log-ts">${fmtLogTs(item.ts)}</div>
-            <div class="log-body">
-              <div class="action">${item.dept} · ${item.action}</div>
-              <div class="detail">${esc(item.detail)}${item.by ? ' · by ' + esc(item.by) : ''}</div>
-            </div>
-          </div>`).join('')}
-      </div>
-    </div>
+    ${activityLogPanel('Activity log')}
   `);
 }
 
@@ -1497,6 +1559,58 @@ function auditorApplicationsHtml(){
       </tbody>
     </table>`;
 }
+// ---------- Activity log with name filter ----------
+function logUserOptions(){
+  const byName = new Map();
+  state.users.forEach(u => byName.set(u.username, u.fullName || u.username));
+  state.activityLog.forEach(i => { if(i.by && !byName.has(i.by)) byName.set(i.by, i.by); });
+  return [...byName.entries()].sort((a,b) => a[1].localeCompare(b[1]));
+}
+function filteredLog(){
+  const q = logSearch.trim().toLowerCase();
+  return state.activityLog.filter(i => {
+    if(logFilterUser !== 'all' && i.by !== logFilterUser) return false;
+    if(!q) return true;
+    const u = state.users.find(x => x.username === i.by);
+    return [i.action, i.detail, i.dept, i.by, u && u.fullName].some(v => (v || '').toLowerCase().includes(q));
+  });
+}
+function logRowsHtml(){
+  const list = filteredLog();
+  if(state.activityLog.length === 0) return `<div class="empty-note">No activity recorded yet.</div>`;
+  if(list.length === 0) return `<div class="empty-note">No activity matches this filter.</div>`;
+  return `<div class="log-count">Showing ${list.length} ${list.length === 1 ? 'entry' : 'entries'}</div>` + list.map(i => {
+    const u = state.users.find(x => x.username === i.by);
+    const who = i.by
+      ? `<div class="by">${u ? avatarHtml(u) : `<div class="user-avatar">${esc((i.by[0] || '?').toUpperCase())}</div>`}<div><div>${esc(u && u.fullName ? u.fullName : i.by)}</div>${u && u.fullName ? `<div class="muted-sm">${esc(i.by)}</div>` : ''}</div></div>`
+      : `<div class="by system">System</div>`;
+    return `
+      <div class="log-row">
+        <div class="ts">${fmtLogTs(i.ts)}</div>
+        <div class="what"><div class="a"><span class="dept">${esc(i.dept)}</span>${esc(i.action)}</div><div class="d">${esc(i.detail)}</div></div>
+        ${who}
+      </div>`;
+  }).join('');
+}
+function setLogFilter(v){ logFilterUser = v; const el = document.getElementById('logList'); if(el) el.innerHTML = logRowsHtml(); }
+function setLogSearch(v){ logSearch = v; const el = document.getElementById('logList'); if(el) el.innerHTML = logRowsHtml(); }
+function activityLogPanel(title){
+  return `
+    <div class="panel">
+      <div class="panel-head">
+        <h2>${title}</h2>
+        <div class="log-filters">
+          <select id="logUser" class="filter-select" onchange="setLogFilter(this.value)">
+            <option value="all">All staff</option>
+            ${logUserOptions().map(([un, nm]) => `<option value="${esc(un)}" ${logFilterUser === un ? 'selected' : ''}>${esc(nm)}${nm !== un ? ` (${esc(un)})` : ''}</option>`).join('')}
+          </select>
+          <input id="logSearch" class="search-input" type="text" placeholder="Search activity" value="${esc(logSearch)}" oninput="setLogSearch(this.value)">
+        </div>
+      </div>
+      <div id="logList">${logRowsHtml()}</div>
+    </div>`;
+}
+
 function auditorLogHtml(){
   if(state.activityLog.length === 0) return `<div class="empty-note">No activity recorded yet.</div>`;
   return state.activityLog.slice(0, 60).map(item => `
@@ -1538,10 +1652,7 @@ function renderAuditor(){
       <div class="panel-head"><h2>All applications</h2></div>
       ${auditorApplicationsHtml()}
     </div>
-    <div class="panel">
-      <div class="panel-head"><h2>Full activity log</h2></div>
-      ${auditorLogHtml()}
-    </div>
+    ${activityLogPanel('Activity log')}
   `);
   renderPlotShapesOnMap();
 }
